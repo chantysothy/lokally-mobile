@@ -1,0 +1,7 @@
+<resources>
+    <string moduleConfig="true" name="reactNativeCodePush_androidDeploymentKey"></string>
+    <string name="app_name">Loka­l­l­y­.in</string>
+    <string name="fb_app_id">144904396133575</string>
+    <string name="fb_login_protocol_scheme">fb129645527699145</string>
+    <string name="ak_client_token">67078ee2109a8e501e81174fa64127be</string>
+</resources>
