@@ -126,16 +126,10 @@ class Comments extends Component {
           <Content scrollEnabled={true}
             extraScrollHeight={-13}
             contentContainerStyle={styles.commentHeadbg}>
+             <Image
+              source={{uri:this.props.navigation.state.params.banner  ? this.props.navigation.state.params.banner: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrHY5zywHTlDyhezSmEXnF7aan7ezaIh62ElV56Jqre-kXaIoHZw"}}
+              style={styles.newsPoster}/>
             <ScrollView>
-            <Card style={styles.card}>
-                <CardItem style={styles.cardHeaderImage}>
-                  <TouchableHighlight >
-                    <Image
-                        source={{uri:this.props.navigation.state.params.banner  ? this.props.navigation.state.params.banner: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrHY5zywHTlDyhezSmEXnF7aan7ezaIh62ElV56Jqre-kXaIoHZw"}}
-                         style={styles.newsPoster}/>
-                  </TouchableHighlight>
-                </CardItem>
-              </Card>
             {this.props.commentData.length > 0
               ?<View style={{ backgroundColor: "#FFF" }}>
                 <List
@@ -201,7 +195,6 @@ class Comments extends Component {
                   placeholder="Enter your comment"
                   placeholderTextColor="#797979"
                   style={styles.input}
-                  value=""
                 />
                 {this.state.disable === false ? 
                 <Button transparent medium style={{ alignSelf: "center" }} onPress={()=>this.sendComment()}>

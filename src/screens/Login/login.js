@@ -158,6 +158,7 @@ class Login extends Component {
             //console.warn("token",JSON.stringify(this.props.acessToken))
             //console.warn("ID",this.props.acessToken.userid)
             if(this.props.acessToken.is_new_user === true){
+              AsyncStorage.setItem('mobileDeviceInfo',JSON.stringify(deviceOneSignal));
               this.props.navigation.navigate("Registration",{phoneNo:account.phoneNumber.number,oneSignal:deviceOneSignal,userDetail:this.props.acessToken})
             }else{
               this.props.loginSuccess(this.props.acessToken.userid)

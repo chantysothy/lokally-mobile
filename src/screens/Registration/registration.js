@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {Platform,Image,TouchableOpacity,View as RNView,Dimensions,Linking,StatusBar,Alert} from "react-native";
+import {Platform,Image,AsyncStorage,TouchableOpacity,View as RNView,Dimensions,Linking,StatusBar,Alert} from "react-native";
 import {
   Container,
   Content,
@@ -12,7 +12,7 @@ import {
   Toast,
   Left,
   Right,
-  Form,Label
+  Form,Label,Spinner
 } from "native-base";
 import styles from "./styles";
 import commonColor from "../../theme/variables/commonColor";
@@ -43,7 +43,8 @@ class Registration extends Component {
       city:'',
       pincode:'',
       tagsSelected:[],
-      tags:[]
+      tags:[],
+      disable:false
     }
     const obj={
       user_id:this.props.navigation.state.params.oneSignal.userId,
@@ -150,16 +151,19 @@ class Registration extends Component {
         "device_infos" :oneSignalKey
       }*/
       //console.warn(JSON.stringify(userObj),accessTokenValue)
+      this.setState({disable :true})
       this.props.userregister(userObj,accessTokenValue).then((data)=>{
         //console.warn(JSON.stringify(this.props.registerStatus))
         //console.warn("status",JSON.stringify(this.props.registerStatus))
          if(this.props.registerStatus.status === "success"){
-
+            //console.warn(this.props.navigation.state.params.userDetail,this.props.navigation.state.params.userDetail.userid,"token",accessTokenValue)
+            AsyncStorage.setItem('userId',this.props.navigation.state.params.userDetail.userid);
+            AsyncStorage.setItem('accessToken',accessTokenValue);
             Alert.alert(
             'Registration',
-            "Successfully Registered...Please login to continue",
+            "Successfully Registered...",
             [
-              { text: 'OK', onPress: () => {this.props.navigation.navigate('Login')}, style: 'cancel' },
+              { text: 'OK', onPress: () => { this.props.navigation.navigate("Drawer",{userLogin:this.props.navigation.state.params.userDetail.userid,token:accessTokenValue})}, style: 'cancel' },
             ],
             { cancelable: false }
           )
@@ -257,15 +261,18 @@ class Registration extends Component {
                 />
               </View>  
               </Form>
-              <Button
-                  rounded
-                  bordered
-                  block
-                  onPress={() => this.signUp()}
-                  style={styles.signupBtn}
+              {this.state.disable === false ?
+                <Button
+                rounded
+                bordered
+                block
+                onPress={() => this.signUp()}
+                style={styles.signupBtn}
                 >
                 <Text style={{ color: "#FFF" }}>Register</Text>
-              </Button>
+                </Button>
+            : <Spinner style={{marginTop:10}} color='#fff'/>}
+             
             </View>
             <DatePickerDialog ref="dobDialog" onDatePicked={this.onDOBDatePicked.bind(this)} />
           </Content>
