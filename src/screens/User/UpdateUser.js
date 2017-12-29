@@ -25,8 +25,8 @@ class UpdateUser extends Component {
     super(props);
     tracker.trackScreenView('User Update');
     this.state={
-      name:'name',
-      email:'email',
+      name:'',
+      email:'',
       dobDate:'',
       dobText:moment(new Date()).format('DD-MMM-YYYY'),
       gender:'Male',
@@ -97,7 +97,8 @@ class UpdateUser extends Component {
      //console.warn("1",JSON.stringify(this.state.tagsSelected))
      //console.warn("Added",this.state.tagsSelected.includes(contact))
      //console.warn("Already",this.props.navigation.state.params.Data._source.tags.includes(contact.name))
-    if(this.props.navigation.state.params.Data._source.tags  === false && this.state.tagsSelected.includes(contact) === false){
+    if(this.props.navigation.state.params.Data._source.tags.includes(contact.name) === false && this.state.tagsSelected.includes(contact) === false){
+      //console.warn(contact)
       this.setState({ tagsSelected: this.state.tagsSelected.concat([contact]) });
     }
   }
@@ -113,7 +114,7 @@ class UpdateUser extends Component {
           "name" : this.state.name,
           "address1" : this.state.addressLine1,
           "address2" : this.state.addressLine2,
-          "dob" : this.state.dobText,
+          "dob" : this.state.dobText === moment(new Date()).format('DD-MMM-YYYY') ? this.props.navigation.state.params.Data._source.dob : this.state.dobText,
           "latitude" : this.props.navigation.state.params.Data._source.latitude,
           "longitude" : this.props.navigation.state.params.Data._source.longitude,
           "email" : this.state.email,

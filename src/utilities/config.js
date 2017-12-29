@@ -115,6 +115,7 @@ var insertComments = (obj,token) => {
 }*/
 
 var registration = (obj,token) =>{
+    //console.warn("2",obj,token)
     return new Promise((res,rej)=>{
         fetch(baseurl+"profile/update", {
             method: 'POST',
@@ -124,6 +125,7 @@ var registration = (obj,token) =>{
             }
         })
         .then((response) => {
+            //console.warn("3",response.json())
             return res(response.json());
         })
         .catch((error) => {
@@ -263,7 +265,7 @@ var deleteCommentById=(id,token)=>{
             }
         })
         .then((response) => {
-            console.warn("res",response.json())
+            //console.warn("res",response.json())
             return res(response.json());
         })
         .catch((error) => {

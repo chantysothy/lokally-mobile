@@ -134,7 +134,7 @@ export function getComments(id,count) {
         dispatch({type:"CLEAR_COMMENTS"})
         resolve(
           getCommentsById(id,count).then(comments => {
-            console.warn("1",comments)
+            //console.warn("1",comments)
             dispatch({ type: "GET_COMMENTS", payload: comments.hits.hits });
             dispatch({type:"TOTAL_COMMENTS",payload: comments.hits.total})
           })
@@ -324,10 +324,12 @@ export function getAllDealTtrend() {
 
 
 export function userregister(obj,token) {
+  //console.warn("1",obj,token)
   return dispatch => {
     return new Promise((resolve, reject) => {
       resolve(
         registration(obj,token).then(register => {
+            //console.warn("4",register)
             dispatch({ type: "REGISTER", payload: register });            
         })
       );

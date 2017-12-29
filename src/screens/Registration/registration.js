@@ -54,11 +54,11 @@ class Registration extends Component {
   }
   componentWillMount(){
     Orientation.lockToPortrait();
-    //accessTokenValue = this.props.navigation.state.params.userDetail.access_token ;
+    accessTokenValue = this.props.navigation.state.params.userDetail.access_token ;
     this.props.getAllTag().then((data)=>{
       this.props.tagData.map(data=>this.state.tags.push({name:data._source.name}))
     })
-    console.warn(JSON.stringify(this.props.navigation.state.params.userDetail))
+    //console.warn(JSON.stringify(this.props.navigation.state.params.userDetail))
   }
   onDOBPress = () => {
     let dobDate = this.state.dobDate;
@@ -118,7 +118,7 @@ class Registration extends Component {
           _id: this.props.navigation.state.params.userDetail.userid,
           _score: 1,
           _source:{
-            "mobile_number" :this.props.navigation.state.params.userDetail._source.mobile_number,  
+            "mobile_number" :this.props.navigation.state.params.phoneNo,  
             "name" : this.state.name,
             "address1" : this.state.addressLine1,
             "address2" : this.state.addressLine2,
@@ -149,9 +149,10 @@ class Registration extends Component {
         "tags" : AllTag,
         "device_infos" :oneSignalKey
       }*/
-      //console.warn(JSON.stringify(userObj))
+      //console.warn(JSON.stringify(userObj),accessTokenValue)
       this.props.userregister(userObj,accessTokenValue).then((data)=>{
         //console.warn(JSON.stringify(this.props.registerStatus))
+        //console.warn("status",JSON.stringify(this.props.registerStatus))
          if(this.props.registerStatus.status === "success"){
 
             Alert.alert(
@@ -177,7 +178,7 @@ class Registration extends Component {
     
   }
   render() {
-    // /console.warn(JSON.stringify(this.props.navigation.state.params.oneSignal))
+    //console.warn(JSON.stringify(this.props.navigation.state.params.userDetail),JSON.stringify(this.props.navigation.state.params.phoneNo))
     var gender = [
       {label: 'Male   ', value: 'Male' },
       {label: 'Female', value: 'Female' }

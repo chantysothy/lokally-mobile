@@ -109,7 +109,7 @@ class Comments extends Component {
     return newDate
   }
   render() {
-    console.warn(JSON.stringify(this.props.commentData))
+    //console.warn(JSON.stringify(this.props.commentData))
     return (
       <Container>
         <Image source={bg} style={styles.container}>
