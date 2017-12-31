@@ -10,6 +10,8 @@ import moment from 'moment';
 
 const bg = require("../../assets/bg-transparent.png");
 let count = 0; 
+let id = "";
+let banner = "";
 // import Timestamp from 'react-timestamp';
 // import TimeAgo from 'react-native-timeago';
 
@@ -30,19 +32,30 @@ class Comments extends Component {
   componentWillMount(){
     count = 0;
     Orientation.lockToPortrait();
-    this.setState({isfetching:true})
+    id = this.props.navigation.state.params.id;
+    banner = this.props.navigation.state.params.banner;
     AsyncStorage.getItem('accessToken',(err,value)=>{
         if(value != null){
           this.setState({access:value})
         }
       })
-      this.props.getComments(this.props.navigation.state.params.id,count,5).then((data)=>{
-        this.setState({fetched:true,isfetching:false})
-      })
+    {this.props.navigation.state.params.dataReturn != 0 ?
+      this.getComment()      
+    :
+    this.props.getComments(this.props.navigation.state.params.id,count,5).then((data)=>{
+      this.setState({fetched:true,isfetching:false})
+    })}
+    
     AsyncStorage.getItem('userId',(err,value)=>{
       if(value != null){
         this.setState({userId:value})
       }
+    })
+  }
+  getComment(){
+    this.setState({isfetching:true})
+    this.props.getComments(this.props.navigation.state.params.id,count,5).then((data)=>{
+      this.setState({fetched:true,isfetching:false})
     })
   }
   loadMore(){
@@ -72,9 +85,10 @@ class Comments extends Component {
           this.props.userComments(obj,this.state.access).then(data=>{
             if(this.props.comment.status){
               count = this.props.totalData+1
-              this.props.getComments(this.props.navigation.state.params.id,0,this.props.totalData+1).then((data)=>{
+              /*this.props.getComments(this.props.navigation.state.params.id,0,this.props.totalData+1).then((data)=>{
                 this.setState({comments:data,isfetching:false})
-              })
+              })*/
+              this.props.navigation.navigate('Comments',{id:id,banner:banner,dataReturn:this.props.totalData+1})
             }else{
                 Alert.alert("Failure","Something went wrong please try again after some time")
             }
@@ -109,7 +123,7 @@ class Comments extends Component {
     return newDate
   }
   render() {
-    //console.warn(JSON.stringify(this.props.commentData))
+    console.warn(this.props.navigation.state.params.dataReturn != 0)
     return (
       <Container>
         <Image source={bg} style={styles.container}>
@@ -131,7 +145,8 @@ class Comments extends Component {
               style={styles.newsPoster}/>
             <ScrollView>
             {this.props.commentData.length > 0
-              ?<View style={{ backgroundColor: "#FFF" }}>
+              ?
+              <View style={{ backgroundColor: "#FFF" }}>
                 <List
                   dataArray={this.props.commentData}
                   renderRow={data =>
@@ -182,11 +197,18 @@ class Comments extends Component {
                 />
               </View>
               :
-              this.state.isFetching === false ? <Button style={{backgroundColor:'white',borderRadius:10,marginTop:120,alignSelf: "center"}}><Text style={{ color:'black'}}>No Comments Available</Text></Button>:<Spinner style={{marginTop:20}} color='#fff'/>}
-               {this.state.fetched === true && this.state.isfetching === false && this.props.totalData > count+5 ?
-                <Button style={{backgroundColor:'white',borderRadius:10,marginTop:20,marginBottom:20,alignSelf: "center"}} onPress={()=>this.loadMore()}><Text style={{ color:'black'}}>More Comments</Text></Button>
-              :<View/>} 
-              {this.state.isFetching === true ? <Spinner style={{marginTop:10}} color='#fff'/> :<View/>}
+              this.props.navigation.state.params.dataReturn === 0 ?
+                <Button style={{backgroundColor:'white',borderRadius:10,marginTop:100,alignSelf: "center"}}>
+                    <Text style={{ color:'black'}}>No Comments Available</Text>
+                </Button>
+              :
+              <Spinner style={{marginTop:50}} color='#fff'/>  
+              }
+              {this.state.fetched === true && this.state.isfetching === false && this.props.totalData > count+5 &&
+                <Button style={{backgroundColor:'white',borderRadius:10,marginTop:20,marginBottom:20,alignSelf: "center"}} onPress={()=>this.loadMore()}>
+                  <Text style={{ color:'black'}}>More Comments</Text>
+                </Button>
+              }            
               </ScrollView>
             <View style={styles.commentBox}>
               <Item style={{ alignItems: "center" }} inlineLabel>

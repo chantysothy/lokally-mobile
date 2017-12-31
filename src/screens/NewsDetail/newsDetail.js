@@ -138,7 +138,7 @@ class NewsDetail extends Component {
                     </Button>}
                   </Col>
                   <Col>
-                    <Button transparent onPress={()=>{this.props.navigation.navigate('Comments',{id:this.props.navigation.state.params.newsDetail._id,banner:this.props.navigation.state.params.newsDetail._source.news_images[0]})}}>
+                    <Button transparent onPress={()=>{this.props.navigation.navigate('Comments',{id:this.props.navigation.state.params.newsDetail._id,banner:this.props.navigation.state.params.newsDetail._source.news_images[0],dataReturn:this.state.eventData.comments})}}>
                       <Icon active name="chatbubbles" />
                       <Text>{this.state.eventData.comments}</Text><Text style={{paddingLeft:5}}>Comments</Text>
                       </Button>
