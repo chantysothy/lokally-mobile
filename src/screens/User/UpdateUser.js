@@ -19,6 +19,7 @@ const tracker = new GoogleAnalyticsTracker('UA-110943333-1');
 import AutoTags from 'react-native-tag-autocomplete';
 let AllTag = [];
 let accessTokenValue = '';
+let tagsValue=[];
 
 class UpdateUser extends Component {
   constructor(props) {
@@ -42,6 +43,7 @@ class UpdateUser extends Component {
   componentWillMount(){
     Orientation.lockToPortrait();
     AllTag=[];
+    tagsValue = [];
     accessTokenValue = this.props.navigation.state.params.accessToken
     this.state.name = this.props.navigation.state.params.Data._source.name
     this.state.email = this.props.navigation.state.params.Data._source.email
@@ -51,6 +53,7 @@ class UpdateUser extends Component {
     this.state.addressLine2 = this.props.navigation.state.params.Data._source.address2
     this.state.city = this.props.navigation.state.params.Data._source.city
     this.state.pincode = this.props.navigation.state.params.Data._source.pincode
+    tagsValue= this.props.navigation.state.params.Data._source.tags
     this.props.navigation.state.params.Data._source.tags.map(tag=>this.state.tagsSelected.push({name:tag}))
     this.props.getAllTag().then((data)=>{
       this.props.tagData.map(data=>this.state.tags.push({name:data._source.name}))
@@ -90,16 +93,19 @@ class UpdateUser extends Component {
   handleDelete = index => {
     let tagsSelected = this.state.tagsSelected;
     tagsSelected.splice(index, 1);
+    tagsValue.splice(index,1)
+    //this.props.navigation.state.params.Data._source.tags(index,1)
     this.setState({ tagsSelected });
   }
 
   handleAddition = contact => {
      //console.warn("1",JSON.stringify(this.state.tagsSelected))
-     //console.warn("Added",this.state.tagsSelected.includes(contact))
+     //console.warn("Added",contact.name,tagsValue.includes(contact.name)) 
      //console.warn("Already",this.props.navigation.state.params.Data._source.tags.includes(contact.name))
-    if(this.props.navigation.state.params.Data._source.tags.includes(contact.name) === false && this.state.tagsSelected.includes(contact) === false){
+    if(tagsValue.includes(contact.name) === false && this.state.tagsSelected.includes(contact) === false){
       //console.warn(contact)
       this.setState({ tagsSelected: this.state.tagsSelected.concat([contact]) });
+      tagsValue.push(contact.name)
     }
   }
   UpdateUser(){

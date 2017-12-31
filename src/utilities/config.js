@@ -60,6 +60,7 @@ var insertLike = (obj,token) => {
 }  
 
 var getUserLike = (id,token) => {
+   // console.warn(id,token)
     return new Promise((res,rej)=>{
         fetch(baseurl+"profile/getlike?id="+id, {
             method: 'GET',

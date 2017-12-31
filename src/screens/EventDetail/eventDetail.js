@@ -35,8 +35,19 @@ class EventDetail extends Component {
   }
   getLikesDetail(){
     getUserLike(this.props.navigation.state.params.eventDetail._id,this.state.access).then((val)=>{
-      console.warn(val)
       this.setState({userLike:val})
+    }).catch(err=>{
+      {this.props.error.length === 0 
+        ? ""
+        :this.props.tokenRenual(this.state.access).then((data)=> {
+          this.props.getUser(this.props.token).then(data=>{
+            AsyncStorage.setItem('accessToken',this.props.token);
+            getUserLike(this.props.navigation.state.params.eventDetail._id,this.state.access).then((val)=>{
+              this.setState({userLike:val})
+            })
+          })
+      })
+    }
     })
   }
   getLikesCount(){
@@ -111,7 +122,7 @@ class EventDetail extends Component {
     {this.props.error.length === 0 
         ? ""
         :this.props.tokenRenual(this.state.access).then((data)=> {
-          this.props.getUser(this.props.token).then(data=>{       
+          this.props.getUser(this.props.token).then(data=>{
             AsyncStorage.setItem('accessToken',this.props.token);
             this.props.userLike(obj,this.props.token)
           })

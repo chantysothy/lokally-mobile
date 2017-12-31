@@ -35,6 +35,18 @@ class DealDetail extends Component {
   getLikesDetail(){
     getUserLike(this.props.navigation.state.params.dealDetail._id,this.state.access).then((val)=>{
       this.setState({userLike:val})
+    }).catch(err=>{
+      {this.props.error.length === 0 
+        ? ""
+        :this.props.tokenRenual(this.state.access).then((data)=> {
+          this.props.getUser(this.props.token).then(data=>{
+            AsyncStorage.setItem('accessToken',this.props.token);
+            getUserLike(this.props.navigation.state.params.dealDetail._id,this.state.access).then((val)=>{
+              this.setState({userLike:val})
+            })
+          })
+      })
+    }
     })
   }
   getLikesCount(){
