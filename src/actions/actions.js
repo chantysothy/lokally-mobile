@@ -127,13 +127,13 @@ export function logOutUser(){
   };
 }
 
-export function getComments(id,count) {
+export function getComments(id,count,value) {
   return dispatch => {
     return new Promise((resolve, reject) => {
       if(count === 0){
         dispatch({type:"CLEAR_COMMENTS"})
         resolve(
-          getCommentsById(id,count).then(comments => {
+          getCommentsById(id,count,value).then(comments => {
             //console.warn("1",comments)
             dispatch({ type: "GET_COMMENTS", payload: comments.hits.hits });
             dispatch({type:"TOTAL_COMMENTS",payload: comments.hits.total})
@@ -141,7 +141,7 @@ export function getComments(id,count) {
         );
       }else{
       resolve(
-        getCommentsById(id,count).then(comments => {
+        getCommentsById(id,count,value).then(comments => {
           dispatch({ type: "GET_COMMENTS", payload: comments.hits.hits });
           dispatch({type:"TOTAL_COMMENTS",payload: comments.hits.total})
         })
