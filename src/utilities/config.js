@@ -245,7 +245,7 @@ var eventsLike = (id) => {
 
 var getCommentsById=(id,count,value)=>{
     return new Promise((res,rej)=>{
-        fetch(baseurl+" /get/commentbyitemid?id="+id+"&from="+count+"&size="+value,{
+        fetch(baseurl+" /get/commentbyitemid?id="+id+"&from="+count+"&size="+value+"&desc=true",{
             method:'GET'
         })
         .then((response) => {
