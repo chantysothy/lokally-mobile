@@ -88,7 +88,7 @@ class Comments extends Component {
             if(this.props.comment.status){
               count = this.props.totalData+1
               this.props.getComments(this.props.navigation.state.params.id,0,this.props.totalData+1).then((data)=>{
-                this.setState({comments:data,isfetching:false,commented:false})
+                this.setState({comments:data,isfetching:false,commented:false,disable:false})
               })
               //this.props.navigation.navigate('Comments',{id:id,banner:banner,dataReturn:this.props.totalData+1})
             }else{

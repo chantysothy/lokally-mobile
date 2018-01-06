@@ -153,7 +153,7 @@ class NewsDetail extends Component {
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
                     <TouchableOpacity>
-                      <Text style={styles.eventAddress} numberOfLines={2}>{this.props.navigation.state.params.newsDetail? this.props.navigation.state.params.newsDetail._source.news_title : <View/>}</Text>
+                      <Text style={styles.eventAddress} numberOfLines={2}>{this.props.navigation.state.params.newsDetail? this.props.navigation.state.params.newsDetail._source.news_title.toUpperCase() : <View/>}</Text>
                     </TouchableOpacity>
                   </Col>                  
                 </Grid>

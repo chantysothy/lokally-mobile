@@ -163,7 +163,7 @@ class DealDetail extends Component {
                 <Grid>
                   <Col style={{ flexDirection: "row" }}>
                     <TouchableOpacity>
-                      <Text style={styles.eventAddress} numberOfLines={1}>{this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_title:""}</Text>
+                      <Text style={styles.eventAddress} numberOfLines={1}>{this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_title.toUpperCase():""}</Text>
                     </TouchableOpacity>
                   </Col>
                 </Grid>

@@ -196,7 +196,7 @@ class EventDetail extends Component {
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
                     <TouchableOpacity>
-                      <Text style={styles.eventAddress} numberOfLines={2}>{this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_title :''}</Text>
+                      <Text style={styles.eventAddress} numberOfLines={2}>{this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_title.toUpperCase() :''}</Text>
                     </TouchableOpacity>
                   </Col>
                 </Grid>
