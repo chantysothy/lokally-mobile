@@ -7,10 +7,11 @@ import styles from "./styles";
 import MapView from 'react-native-maps';
 import HTMLView from 'react-native-htmlview';
 import Comments from './../Comments';
-import {eventsLike,getUserLike} from '../../utilities/config';
+import {eventsLike,getUserLike,share} from '../../utilities/config';
 import {  GoogleAnalyticsTracker  } from 'react-native-google-analytics-bridge';
 const tracker = new GoogleAnalyticsTracker('UA-110943333-1');
 import Orientation from 'react-native-orientation';
+import Share from 'react-native-share';
 
 const screen = Dimensions.get('window');
 const ASPECT_RATIO = screen.width / screen.height;
@@ -20,7 +21,7 @@ class EventDetail extends Component {
   constructor(props) {
     super(props);
     tracker.trackScreenView('Event');
-    this.state={markers:[],eventData:[],comment:false,access:'',userLike:''}
+    this.state={markers:[],eventData:[],comment:false,access:'',userId:'',userLike:''}
   }
   
   componentDidMount(){
@@ -30,6 +31,11 @@ class EventDetail extends Component {
       if(value != null){
         this.setState({access:value})
         this.getLikesDetail()
+      }
+    })
+    AsyncStorage.getItem('userId',(err,value)=>{
+      if(value != null){
+        this.setState({userId:value})
       }
     })
   }
@@ -53,14 +59,31 @@ class EventDetail extends Component {
   }
 
   share(event){
+    let shareObj = {
+      "user_id" : this.props.navigation.state.params.eventDetail._id,
+      "item_id" : this.state.userId,
+      "shared_to" : "clustrex",
+      "shared_via" : "facebook" 
+    }
     let url = "http://maps.google.com/maps?q="+event._source.event_lat+","+event._source.event_lng+"&ll="+event._source.event_lat+","+event._source.event_lng+"&z=17"
     SendIntentAndroid.sendText({
       title: 'Select the app to share',
       text: "Event Title:"+event._source.event_title+"\n"+"Date:"+event._source.event_date+"\n"+"Address:"+event._source.event_address+"\n"+"From Time:"+event._source.event_time_from+"\n"+"To Time:"+event._source.event_time_to+"\n"+"Click link to get direction "+url,
       type: SendIntentAndroid.TEXT_PLAIN
-    });
+    })
+    share(shareObj,this.state.access).then((data)=>console.warn(JSON.stringify(data)))
+    /*let obj = {
+      title: event._source.event_title,
+      message:"Event Title:"+event._source.event_title+"\n"+"Date:"+event._source.event_date+"\n"+"Address:"+event._source.event_address+"\n"+"From Time:"+event._source.event_time_from+"\n"+"To Time:"+event._source.event_time_to+"\n"+"Click link to get direction "+url,
+      url: "http://facebook.github.io/react-native/",
+      subject: "Share Link" 
+    }
+    Share.open(obj)
+            .then(data=>{
+              share(shareObj,this.state.access).then((data)=>console.warn(JSON.stringify(data)))
+            })
+            .catch((err) => { err && console.warn(err); })*/
    }
-
    openMap(address){
     SendIntentAndroid.openMaps(address);
    }

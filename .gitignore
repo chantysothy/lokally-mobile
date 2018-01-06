@@ -2,9 +2,6 @@
 #
 .DS_Store
 
-# Xcode
-#
-build/
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -22,14 +19,13 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 
-# Android/IntelliJ
-#
-build/generated/
-build/intermediates/
-build/outputs/logs/
-build/outputs/lint-results-release-fatal.html
-build/outputs/lint-results-release-fatal.xml
-build/tmp/
+/android/build
+/android/app/build/generated
+/android/app/build/tmp
+/android/app/build/intermediates
+/android/app/build/outputs/logs
+/android/app/build/outputs/*.html
+/android/app/build/outputs/*.xml
 
 .idea
 .gradle
@@ -46,14 +42,3 @@ yarn-error.log
 buck-out/
 \.buckd/
 *.keystore
-
-# fastlane
-#
-# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
-# screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://docs.fastlane.tools/best-practices/source-control/
-
-*/fastlane/report.xml
-*/fastlane/Preview.html
-*/fastlane/screenshots

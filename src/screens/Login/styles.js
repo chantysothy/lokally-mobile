@@ -90,6 +90,6 @@ export default {
   app_name_suffix:{
     color:'white',
     fontSize: 10,
-    lineHeight: deviceWidth > 400 ? 14 : 20
+    //lineHeight: deviceWidth > 400 ?  : 20
   }
 };

@@ -59,6 +59,25 @@ var insertLike = (obj,token) => {
     })
 }  
 
+var share = (obj,token) => {
+    return new Promise((res,rej)=>{
+        fetch(baseurl+"profile/share", {
+            method: 'POST',
+            body:JSON.stringify(obj),
+            headers: {
+                'Authorization': token
+            }
+        })
+        .then((response) => {
+            //console.warn("like",response)
+            return res(response.json());
+        })
+        .catch((error) => {
+            console.warn("err",error);
+        });
+    })
+}
+
 var getUserLike = (id,token) => {
    // console.warn(id,token)
     return new Promise((res,rej)=>{
@@ -342,7 +361,7 @@ exports.findNewsTrend = findNewsTrend;
 exports.findEventsTrend = findEventsTrend;
 exports.findDealTrend = findDealTrend;
 exports.category = category;
-//exports.login = login;
+exports.share = share;
 exports.registration = registration
 exports.getUserById = getUserById;
 exports.notification = notification;

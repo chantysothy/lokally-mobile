@@ -93,6 +93,7 @@ class Comments extends Component {
               //this.props.navigation.navigate('Comments',{id:id,banner:banner,dataReturn:this.props.totalData+1})
             }else{
                 Alert.alert("Failure","Something went wrong please try again after some time")
+                this.setState({isfetching:false,commented:false,disable:false})
             }
           })
         }
