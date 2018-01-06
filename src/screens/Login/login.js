@@ -192,9 +192,9 @@ class Login extends Component {
           <Content>
               <View style={{alignSelf: "center",marginBottom:25,marginRight:20}}>  
                 <Text style={styles.app_name}>{this.props.config ?  this.props.config.app_name :""}
-                  {this.props.config ? this.props.config.app_name ?
+                  {/* {this.props.config ? this.props.config.app_name ?
                     <Text style={styles.app_name_suffix}>.IN</Text>
-                  :'':''}
+                  :'':''} */}
                 </Text>
               </View> 
               <View style={{marginRight:20}}>

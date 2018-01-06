@@ -25,7 +25,7 @@ class EventDetail extends Component {
   
   componentDidMount(){
     Orientation.lockToPortrait();
-    this.getLikesCount();
+    this.getLikesCount(this.props.navigation.state.params.eventDetail._id)
     AsyncStorage.getItem('accessToken',(err,value)=>{
       if(value != null){
         this.setState({access:value})
@@ -33,6 +33,7 @@ class EventDetail extends Component {
       }
     })
   }
+
   getLikesDetail(){
     getUserLike(this.props.navigation.state.params.eventDetail._id,this.state.access).then((val)=>{
       this.setState({userLike:val})
@@ -50,16 +51,7 @@ class EventDetail extends Component {
     }
     })
   }
-  getLikesCount(){
-    {this.props.navigation.state.params.eventDetail ?
-      eventsLike(this.props.navigation.state.params.eventDetail._id).then((data)=>{
-        if(data){
-          this.setState({eventData:data})
-        }
-        
-      })
-      :<View/>}
-  }
+
   share(event){
     let url = "http://maps.google.com/maps?q="+event._source.event_lat+","+event._source.event_lng+"&ll="+event._source.event_lat+","+event._source.event_lng+"&z=17"
     SendIntentAndroid.sendText({
@@ -72,7 +64,13 @@ class EventDetail extends Component {
    openMap(address){
     SendIntentAndroid.openMaps(address);
    }
-
+   getLikesCount(id) {
+      eventsLike(id).then((data)=>{
+        if(data){
+          this.setState({eventData:data})
+        }      
+      })
+  }
    email(event){
     SendIntentAndroid.sendMail(event._source.contact_email,"Regarding event"+event._source.event_title,"");
    }
@@ -134,7 +132,7 @@ class EventDetail extends Component {
   }*/
   render() {
     //console.warn(JSON.stringify(this.props.navigation.state.params.eventDetail ))
-    //console.warn(this.props.navigation.state.params.tagBanner)
+    //console.warn("jhg",id)
     //console.warn("err",this.props.error,"yok",this.props.token)
     return (
       <Container>
@@ -181,7 +179,7 @@ class EventDetail extends Component {
                       
                   </Col>
                   <Col >
-                    <Button transparent onPress={()=>{this.props.navigation.navigate('Comments',{id:this.props.navigation.state.params.eventDetail._id,banner:this.props.navigation.state.params.eventDetail._source.event_images[0],dataReturn:this.state.eventData.comments})}}>
+                    <Button transparent onPress={()=>{this.props.navigation.navigate('Comments',{id:this.props.navigation.state.params.eventDetail._id,banner:this.props.navigation.state.params.eventDetail._source.event_images[0],dataReturn:this.state.eventData.comments,returnData: this.getLikesCount.bind(this)})}}>
                       <Icon active name="chatbubbles" />
                       <Text>{this.state.eventData.comments}</Text><Text style={{paddingLeft:5}}>Comments</Text>
                       </Button>

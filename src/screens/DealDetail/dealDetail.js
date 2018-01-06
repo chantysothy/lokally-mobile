@@ -24,7 +24,7 @@ class DealDetail extends Component {
   }
   componentWillMount(){
     Orientation.lockToPortrait();
-    this.getLikesCount();
+    this.getLikesCount(this.props.navigation.state.params.dealDetail._id);
     AsyncStorage.getItem('accessToken',(err,value)=>{
       if(value != null){
         this.setState({access:value})
@@ -49,16 +49,13 @@ class DealDetail extends Component {
     }
     })
   }
-  getLikesCount(){
-    {this.props.navigation.state.params.dealDetail ?
-      eventsLike(this.props.navigation.state.params.dealDetail._id).then((data)=>{
-        if(data){
-          this.setState({eventData:data})
-        }
-        
-      })
-      :<View/>}
-  }
+  getLikesCount(id) {
+    eventsLike(id).then((data)=>{
+      if(data){
+        this.setState({eventData:data})
+      }      
+    })
+}
   share(deal){
     SendIntentAndroid.sendText({
       title: 'Select the app to share',
@@ -149,7 +146,7 @@ class DealDetail extends Component {
                   
               </Col>
               <Col >
-                <Button transparent onPress={()=>{this.props.navigation.navigate('Comments',{id:this.props.navigation.state.params.dealDetail._id,banner:this.props.navigation.state.params.dealDetail._source.deal_images[0],dataReturn:this.state.eventData.comments})}}>
+                <Button transparent onPress={()=>{this.props.navigation.navigate('Comments',{id:this.props.navigation.state.params.dealDetail._id,banner:this.props.navigation.state.params.dealDetail._source.deal_images[0],dataReturn:this.state.eventData.comments,returnData: this.getLikesCount.bind(this)})}}>
                   <Icon active name="chatbubbles" />
                   <Text>{this.state.eventData.comments}</Text><Text style={{paddingLeft:5}}>Comments</Text>
                   </Button>
@@ -173,7 +170,7 @@ class DealDetail extends Component {
                 {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.sold_by ?
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
-                    <Text style={styles.newsLink}>
+                    <Text style={styles.eventAddress}>
                       # {this.props.navigation.state.params.dealDetail._source.sold_by}
                     </Text>
                     </Col>

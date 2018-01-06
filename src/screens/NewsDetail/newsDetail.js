@@ -24,7 +24,7 @@ class NewsDetail extends Component {
   }
   componentDidMount(){
     Orientation.lockToPortrait();
-    this.getLikesCount();
+    this.getLikesCount(this.props.navigation.state.params.newsDetail._id);
     AsyncStorage.getItem('accessToken',(err,value)=>{
       if(value != null){
         this.setState({access:value})
@@ -49,15 +49,13 @@ class NewsDetail extends Component {
     }
     })
   }
-  getLikesCount(){
-    {this.props.navigation.state.params.newsDetail ?
-        eventsLike(this.props.navigation.state.params.newsDetail._id).then((data)=>{
-         if(data){
-           this.setState({eventData:data})
-         }
-       })
-       :<View/>}
-  }
+  getLikesCount(id) {
+    eventsLike(id).then((data)=>{
+      if(data){
+        this.setState({eventData:data})
+      }      
+    })
+}
   share(news){
     SendIntentAndroid.sendText({
       title: 'Select the app to share',
@@ -138,7 +136,7 @@ class NewsDetail extends Component {
                     </Button>}
                   </Col>
                   <Col>
-                    <Button transparent onPress={()=>{this.props.navigation.navigate('Comments',{id:this.props.navigation.state.params.newsDetail._id,banner:this.props.navigation.state.params.newsDetail._source.news_images[0],dataReturn:this.state.eventData.comments})}}>
+                    <Button transparent onPress={()=>{this.props.navigation.navigate('Comments',{id:this.props.navigation.state.params.newsDetail._id,banner:this.props.navigation.state.params.newsDetail._source.news_images[0],dataReturn:this.state.eventData.comments,returnData: this.getLikesCount.bind(this)})}}>
                       <Icon active name="chatbubbles" />
                       <Text>{this.state.eventData.comments}</Text><Text style={{paddingLeft:5}}>Comments</Text>
                       </Button>

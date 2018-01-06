@@ -44,7 +44,7 @@ export default {
   },
   eventAddress:{
     color: Platform.OS === "android" ? "#777" : "#666",
-    fontSize: 15,
+    fontSize: 17,
     alignSelf: "flex-start",
     fontWeight: "bold"
   },

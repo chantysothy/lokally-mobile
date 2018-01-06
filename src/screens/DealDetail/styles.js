@@ -56,13 +56,13 @@ export default {
   },
   newsLink: {
     color: Platform.OS === "android" ? "#777" : "#666",
-    fontSize: 12,
+    fontSize: 17,
     alignSelf: "flex-start",
     fontWeight: "bold"
   },
   eventAddress:{
     color: Platform.OS === "android" ? "#777" : "#666",
-    fontSize: 12,
+    fontSize: 18,
     alignSelf: "flex-start",
     fontWeight: "bold"
   },

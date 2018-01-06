@@ -11,7 +11,6 @@ const tracker = new GoogleAnalyticsTracker('UA-110943333-1');
 import Orientation from 'react-native-orientation';
 let initalOrientation ='' ;
 let bannerImage = [];
-import AppLink from 'react-native-app-link';
 
 class Home extends Component {
   constructor(props){
@@ -63,14 +62,7 @@ tracker(event,routeValue){
     }
     
 }
-openApp(){
-    AppLink.maybeOpenURL("https://play.google.com/store/apps/details?id=net.one97.paytm&hl=en", { appName:'paytm', appStoreId:'id473941634', playStoreId:'net.one97.paytm' }).then(() => {
-        // do stuff
-      })
-      .catch((err) => {
-        console.warn(err)
-      });
-}
+
 
 render() {
 const navigation = this.props.navigation;

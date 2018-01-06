@@ -26,7 +26,8 @@ class Comments extends Component {
         disable:false,
         userId:'',
         fetched:false,
-        isfetching:false
+        isfetching:false,
+        commented:false
     }
   }
   componentWillMount(){
@@ -83,12 +84,13 @@ class Comments extends Component {
         }
         if(this.state.message != ""){
           this.props.userComments(obj,this.state.access).then(data=>{
+            this.setState({commented:true})
             if(this.props.comment.status){
               count = this.props.totalData+1
-              /*this.props.getComments(this.props.navigation.state.params.id,0,this.props.totalData+1).then((data)=>{
-                this.setState({comments:data,isfetching:false})
-              })*/
-              this.props.navigation.navigate('Comments',{id:id,banner:banner,dataReturn:this.props.totalData+1})
+              this.props.getComments(this.props.navigation.state.params.id,0,this.props.totalData+1).then((data)=>{
+                this.setState({comments:data,isfetching:false,commented:false})
+              })
+              //this.props.navigation.navigate('Comments',{id:id,banner:banner,dataReturn:this.props.totalData+1})
             }else{
                 Alert.alert("Failure","Something went wrong please try again after some time")
             }
@@ -123,7 +125,6 @@ class Comments extends Component {
     return newDate
   }
   render() {
-    console.warn(this.props.navigation.state.params.dataReturn != 0)
     return (
       <Container>
         <Image source={bg} style={styles.container}>
@@ -131,7 +132,11 @@ class Comments extends Component {
               style={styles.headerStyle}>
               <Body
                 style={{ flexDirection: "row"}}>
-                <Button transparent onPress={() => this.props.navigation.goBack()}>
+                <Button transparent 
+                        onPress={() => {
+                          this.props.navigation.state.params.returnData(this.props.navigation.state.params.id);
+                          this.props.navigation.goBack()
+                        }}>
                   <Icon active name="arrow-back" style={styles.headerIcons} />
                 </Button>
               </Body>
@@ -210,24 +215,26 @@ class Comments extends Component {
                 </Button>
               }            
               </ScrollView>
-            <View style={styles.commentBox}>
-              <Item style={{ alignItems: "center" }} inlineLabel>
-                <Icon name="ios-text" style={styles.attachIcon} />
-                <Input
-                  onChangeText={(text) => { this.setState({ message: text }) }}
-                  placeholder="Enter your comment"
-                  placeholderTextColor="#797979"
-                  style={styles.input}
-                />
-                {this.state.disable === false ? 
-                <Button transparent medium style={{ alignSelf: "center" }} onPress={()=>this.sendComment()}>
-                    <Icon name="md-send" style={styles.attachIcon} />
-                </Button>
-                :<Button transparent medium style={{ alignSelf: "center" }}>
-                    <Icon name="md-send" style={styles.attachIcon} />
-                </Button>}
-              </Item>
-            </View>
+              {!this.state.commented ?
+              <View style={styles.commentBox}>
+                <Item style={{ alignItems: "center" }} inlineLabel>
+                  <Icon name="ios-text" style={styles.attachIcon} />
+                  <Input
+                    onChangeText={(text) => { this.setState({ message: text }) }}
+                    placeholder="Enter your comment"
+                    placeholderTextColor="#797979"
+                    style={styles.input}
+                  />
+                  {this.state.disable === false ? 
+                  <Button transparent medium style={{ alignSelf: "center" }} onPress={()=>this.sendComment()}>
+                      <Icon name="md-send" style={styles.attachIcon} />
+                  </Button>
+                  :<Button transparent medium style={{ alignSelf: "center" }}>
+                      <Icon name="md-send" style={styles.attachIcon} />
+                  </Button>}
+                </Item>
+              </View>
+              :<View/>}
           </Content>
         </Image>
       </Container>
