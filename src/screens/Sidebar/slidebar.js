@@ -26,19 +26,6 @@ export default class SideBar extends Component {
         })
       }
     })
-    /*AsyncStorage.getItem('userName',(err,value)=>{
-      if(value != null){        
-        this.setState({userName:value})
-      }
-    })
-    {this.props.error.length === 0 ? "":
-      this.props.tokenRenual(this.state.accessToken).then((data)=> {
-        this.props.getUser(this.props.token).then(data=>{
-          this.setState({profileData:this.props.profile ? this.props.profile :''})
-            AsyncStorage.setItem('accessToken',this.props.token);
-            this.setState({accessToken:this.props.token})
-        })
-      })}*/
     }
 
   logOut(){
@@ -48,7 +35,6 @@ export default class SideBar extends Component {
       this.props.navigation.navigate('Login')
   }
   render() {
-    //console.warn("slider",this.props.profile,this.props.token,this.state.accessToken)
     const navigation = this.props.navigation;
     return (
       <Container>

@@ -123,14 +123,17 @@ class DealDetail extends Component {
     SendIntentAndroid.sendMail(event._source.contact_email_id,"Regarding event"+event._source.event_title,"");
    }
   render() {
-    console.warn(JSON.stringify(this.props.navigation.state.params.dealDetail._source))
+    let navigation =  this.props.navigation;
+    let deal = this.props.navigation.state.params.dealDetail;
+    let tagName = this.props.navigation.state.params.tagName;
+    let eventData =  this.state.eventData;
     return (
       <Container>
         <Header
           style={styles.headerStyle}>
           <Body
             style={{ flexDirection: "row"}}>
-            <Button transparent onPress={() => this.props.navigation.goBack()}>
+            <Button transparent onPress={() => navigation.goBack()}>
               <Icon active name="arrow-back" style={styles.headerIcons} />
             </Button>
           </Body>
@@ -140,6 +143,7 @@ class DealDetail extends Component {
             </Button>
           </Right>
         </Header>
+        {deal ?
         <Content
           showsVerticalScrollIndicator={false}
           style={{ backgroundColor: "#fff" }} >
@@ -147,33 +151,32 @@ class DealDetail extends Component {
             <View>
               <TouchableHighlight onPress={()=>this.ZoomImage()}>
                 <Image
-                  source={{uri:this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_images[0] :"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPSqAqGclJSd4phB6EmUWv2_05-WXBGdDzmcoMyMv971rnmTSjXg"}}
+                  source={{uri:deal._source.deal_images[0] ? deal._source.deal_images[0] :"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPSqAqGclJSd4phB6EmUWv2_05-WXBGdDzmcoMyMv971rnmTSjXg"}}
                   style={styles.newsPoster}/>
               </TouchableHighlight>
             </View>
             <View style={{ backgroundColor: "#fff" }}>
                 <Grid>
-                <Col style={{ flexDirection: "row" }}>
-                {this.state.userLike.user_liked === true ? 
-                  <Button onPress={()=>{this.userLikes()}}>
-                    <Icon active name="thumbs-up" />
-                    <Text>{this.state.eventData.likes}</Text><Text style={{paddingLeft:5}}>Likes</Text>
-                  </Button>
-                : <Button transparent onPress={()=>{this.userLikes()}}>
-                    <Icon active name="thumbs-up" />
-                    <Text>{this.state.eventData.likes}</Text><Text style={{paddingLeft:5}}>Likes</Text>
-                </Button>}
-                  
-              </Col>
-              <Col >
-                <Button transparent onPress={()=>{this.props.navigation.navigate('Comments',{id:this.props.navigation.state.params.dealDetail._id,banner:this.props.navigation.state.params.dealDetail._source.deal_images[0],dataReturn:this.state.eventData.comments,returnData: this.getLikesCount.bind(this)})}}>
-                  <Icon active name="chatbubbles" />
-                  <Text>{this.state.eventData.comments}</Text><Text style={{paddingLeft:5}}>Comments</Text>
-                  </Button>
-              </Col>
+                  <Col style={{ flexDirection: "row" }}>
+                    {this.state.userLike.user_liked === true ? 
+                      <Button onPress={()=>{this.userLikes()}}>
+                        <Icon active name="thumbs-up" />
+                        <Text>{eventData.likes}</Text><Text style={{paddingLeft:5}}>Likes</Text>
+                      </Button>
+                      : <Button transparent onPress={()=>{this.userLikes()}}>
+                        <Icon active name="thumbs-up" />
+                        <Text>{eventData.likes}</Text><Text style={{paddingLeft:5}}>Likes</Text>
+                    </Button>}                  
+                  </Col>
+                  <Col >
+                    <Button transparent onPress={()=>{navigation.navigate('Comments',{id:deal._id,banner:deal._source.deal_images[0],dataReturn:eventData.comments,returnData: this.getLikesCount.bind(this)})}}>
+                      <Icon active name="chatbubbles" />
+                      <Text>{eventData.comments}</Text><Text style={{paddingLeft:5}}>Comments</Text>
+                      </Button>
+                  </Col>
                   <Col style={{marginTop:15,marginRight:10}}>
-                    <TouchableOpacity style={styles.newsTypeView} onPress={()=>{this.props.navigation.navigate('DealList',{tagName:this.props.navigation.state.params.tagName,banner:this.props.navigation.state.params.tagBanner ? this.props.navigation.state.params.tagBanner : "https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+this.props.navigation.state.params.tagName+".jpg"})}}>
-                      <Text style={styles.newsTypeText}>{this.props.navigation.state.params.tagName.toUpperCase()}</Text>
+                    <TouchableOpacity style={styles.newsTypeView} onPress={()=>{navigation.navigate('DealList',{tagName:tagName,banner:this.props.navigation.state.params.tagBanner ? this.props.navigation.state.params.tagBanner : "https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+tagName+".jpg"})}}>
+                      <Text style={styles.newsTypeText}>{tagName.toUpperCase()}</Text>
                     </TouchableOpacity>
                   </Col>
                 </Grid>
@@ -183,94 +186,91 @@ class DealDetail extends Component {
                 <Grid>
                   <Col style={{ flexDirection: "row" }}>
                     <TouchableOpacity>
-                      <Text style={styles.eventAddress} numberOfLines={1}>{this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_title.toUpperCase():""}</Text>
+                      <Text style={styles.eventAddress} numberOfLines={1}>{deal._source.deal_title.toUpperCase()}</Text>
                     </TouchableOpacity>
                   </Col>
                 </Grid>
-                {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.sold_by ?
-                <Grid style={{ paddingBottom: 20 }}>
-                  <Col style={{ flexDirection: "row" }}>
-                    <Text style={styles.eventAddress}>
-                      # {this.props.navigation.state.params.dealDetail._source.sold_by}
-                    </Text>
-                    </Col>
-                </Grid>:<View/>:<View/>}
+                {deal._source.sold_by ?
+                  <Grid style={{ paddingBottom: 20 }}>
+                    <Col style={{ flexDirection: "row" }}>
+                      <Text style={styles.eventAddress}>
+                        # {deal._source.sold_by}
+                      </Text>
+                      </Col>
+                  </Grid> : <View/>}
               </View>
-              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_body ?
+              {deal._source.deal_body ?
                 <View style={styles.newsContentBody}>
                     <HTMLView
-                          value={this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_body:''}					
-                          stylesheet={styles.newsHeader}	
-                      />
+                          value={deal._source.deal_body}					
+                          stylesheet={styles.newsHeader}/>
                 </View>
-              :<View/>:<View/>}
-              {this.props.navigation.state.params.dealDetail ?  this.props.navigation.state.params.dealDetail._source.applicable_for ?
-                 <Grid style={{ paddingLeft: 20 }}>
-                  <Col style={{ flexDirection: "row" }}>
-                    <TouchableOpacity>
-                      <Text style={styles.newsHeader} numberOfLines={2}>Applicable for : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.applicable_for :''}</Text></Text>
-                    </TouchableOpacity>
-                  </Col>
-                </Grid>
-                :<View/>:<View/>}
-              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_price ?
-              <View style={{ padding: 20 }}>
-                <Text style={styles.newsHeader}>Deal : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.deal_price }</Text></Text>
-              </View> : <View/>:<View/>}       
-              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.payment ?
-              <View style={{ paddingLeft: 20 }}>
-                <Text style={styles.newsHeader}>&#8377; <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.payment }</Text></Text>
-              </View> : <View/>:<View/>}
-              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.location ?
-              <View style={{ padding: 20 }}>
-                <Text style={styles.newsComment} onPress={()=>this.openMap(parseFloat(this.props.navigation.state.params.dealDetail._source.deal_lat)+","+parseFloat(this.props.navigation.state.params.dealDetail._source.deal_lng))}><Icon name='ios-map-outline' style={styles.timeIcon}/>  {this.props.navigation.state.params.dealDetail._source.location.replace(/\n/g, " ")}</Text>
-              </View>
-              :<View/>:<View/>}              
-              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_end_date ? 
-                <View style={{ paddingLeft: 20}}>
-                <Text style={styles.newsHeader}><Icon name='ios-calendar-outline' style={styles.timeIcon}/> {this.props.navigation.state.params.dealDetail._source.deal_start_date ? <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.deal_start_date} to {this.props.navigation.state.params.dealDetail._source.deal_end_date}</Text> : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.deal_end_date}</Text>}</Text>
-              </View> : <View/>:<View/>}
-              <Grid  style={{ padding: 20}}>
-                {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_time_from
-                    ?
-                    <Col style={{ flexDirection: "row",alignItems:'flex-start'}}>
+              :<View/>}
+              {deal._source.applicable_for ?
+                  <Grid style={{ paddingLeft: 20 }}>
+                    <Col style={{ flexDirection: "row" }}>
                       <TouchableOpacity>
-                        <Text style={styles.newsComment}><Icon name='ios-timer-outline' style={styles.timeIcon}/>  {this.props.navigation.state.params.dealDetail._source.deal_time_from} {this.props.navigation.state.params.dealDetail._source.deal_time_to ?  " to " : ''} {this.props.navigation.state.params.dealDetail._source.deal_time_to ?  this.props.navigation.state.params.dealDetail._source.deal_time_to : ''}</Text>
+                        <Text style={styles.newsHeader} numberOfLines={2}>Applicable for : <Text style={styles.newsComment}>{deal._source.applicable_for}</Text></Text>
                       </TouchableOpacity>
                     </Col>
-                    :<View/>:<View/>}
+                  </Grid>
+              :<View/>}
+              {deal._source.deal_price ?
+                <View style={{ padding: 20 }}>
+                  <Text style={styles.newsHeader}>Deal : <Text style={styles.newsComment}>{deal._source.deal_price }</Text></Text>
+                </View> 
+              :<View/>}       
+              {deal._source.payment ?
+                <View style={{ paddingLeft: 20 }}>
+                  <Text style={styles.newsHeader}>&#8377; <Text style={styles.newsComment}>{deal._source.payment }</Text></Text>
+                </View> 
+              : <View/>}
+              {deal._source.location ?
+              <View style={{ padding: 20 }}>
+                <Text style={styles.newsComment} onPress={()=>this.openMap(parseFloat(deal._source.deal_lat)+","+parseFloat(deal._source.deal_lng))}><Icon name='ios-map-outline' style={styles.timeIcon}/>  {this.props.navigation.state.params.dealDetail._source.location.replace(/\n/g, " ")}</Text>
+              </View>
+              :<View/>}              
+              {deal._source.deal_start_date ? 
+                <View style={{ paddingLeft: 20}}>
+                  <Text style={styles.newsComment}><Icon name='ios-calendar-outline' style={styles.timeIcon}/>  {deal._source.deal_start_date}  {deal._source.deal_end_date ? `to `+deal._source.deal_end_date : ''}</Text>
+                </View> 
+              : <View/>}
+              <Grid  style={{ padding: 20}}>
+                {deal._source.deal_time_from  ?
+                    <Col style={{ flexDirection: "row",alignItems:'flex-start'}}>
+                      <TouchableOpacity>
+                        <Text style={styles.newsComment}> <Icon name='ios-timer-outline' style={styles.timeIcon}/>  {deal._source.deal_time_from} {deal._source.deal_time_to ?  `to `+deal._source.deal_time_to : ''}</Text>
+                      </TouchableOpacity>
+                    </Col>
+                :<View/>}
               </Grid>              
               <View style={{ padding: 20 }}>
-                {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.contact_name ?
+                {deal._source.contact_name ?
                   <View style={styles.newsCommentContainer}>
-                    <Text style={styles.newsComment}>
-                    <Icon name='md-person' style={styles.timeIcon}/>  {this.props.navigation.state.params.dealDetail._source.contact_name}
-                    </Text>
-                  </View> : <View/>:<View/>}
-                  {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.contact_number ?
+                    <Text style={styles.newsComment}><Icon name='md-person' style={styles.timeIcon}/>  {deal._source.contact_name}</Text>
+                  </View>:<View/>}
+                  {deal._source.contact_number ?
+                  <View style={styles.newsCommentContainer}>                    
+                    <Text style={styles.newsComment} onPress={()=>{this.phoneDial(deal)}}><Icon name='ios-phone-portrait' style={styles.timeIcon}/>  {deal._source.contact_number}</Text>
+                  </View>:<View/>}
+                  {deal._source.contact_email_id ?
                   <View style={styles.newsCommentContainer}>
-                    <Text style={styles.newsComment} onPress={()=>{this.phoneDial(this.props.navigation.state.params.dealDetail)}}>
-                    <Icon name='ios-phone-portrait' style={styles.timeIcon}/>  {this.props.navigation.state.params.dealDetail._source.contact_number}
+                    <Text style={styles.newsComment} onPress={()=>{this.email(deal)}}>
+                      <Icon name='md-mail' style={styles.timeIcon}/>   {deal._source.contact_email_id}
                     </Text>
-                  </View> : <View/>:<View/>}
-                  {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.contact_email_id ?
-                <View style={styles.newsCommentContainer}>
-                  <Text style={styles.newsComment} onPress={()=>{this.email(this.props.navigation.state.params.dealDetail)}}>
-                    <Icon name='md-mail' style={styles.timeIcon}/>  {this.props.navigation.state.params.dealDetail._source.contact_email_id}
-                  </Text>
-                </View> : <View/>:<View/>} 
-                  {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.website ?
+                  </View>:<View/>} 
+                  {deal._source.website ?
                   <View style={styles.newsCommentContainer}>
-                    <Text style={styles.newsComment} onPress={()=>{this.openbrowser(this.props.navigation.state.params.dealDetail._source.website)}}>
-                    <Icon name='md-globe' style={styles.timeIcon}/>  {this.props.navigation.state.params.dealDetail._source.website}
+                    <Text style={styles.newsComment} onPress={()=>{this.openbrowser(deal._source.website)}}>
+                    <Icon name='md-globe' style={styles.timeIcon}/>   {deal._source.website}
                     </Text>
-                  </View> : <View/>:<View/>}
+                  </View> :<View/>}
                </View>
-               {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.terms_and_condition.length > 0 ?
+               {deal._source.terms_and_condition.length > 0 ?
                 <View>
                   <Text style={styles.terms_and_condition}>Terms and Condition</Text>
                   <View style={{ padding: 20 }}>
-                    {this.props.navigation.state.params.dealDetail._source.terms_and_condition.map((term,key)=>
+                    {deal._source.terms_and_condition.map((term,key)=>
                         <View style={styles.newsCommentContainer} key={key}>
                           <Text style={styles.newsComment}>
                             {term}
@@ -278,42 +278,40 @@ class DealDetail extends Component {
                         </View>)}               
                   </View>
                 </View>
-                :<View/>:<View/>}
-               {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.tags && this.props.navigation.state.params.dealDetail._source.tags.length > 1 ?
+                :<View/>}
+               {deal._source.tags && deal._source.tags.length > 1 ?
                 <View style={{ paddingLeft: 10,paddingBottom:20 }}>
-                  {/* <Text style={styles.newsHeader}>Tags</Text>*/}
                   <Grid>
-                    {this.props.navigation.state.params.dealDetail._source.tags.map((tag,key)=>
+                    {deal._source.tags.map((tag,key)=>
                       <View style={{ flexDirection: "row",paddingRight:5,marginTop:10}} key={key}>
-                          <Button bordered style={{padding:0,borderRadius:10,borderColor:'#01cca1'}} onPress={()=>{this.props.navigation.navigate('DealList',{tagName:tag,banner:"https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+tag+".jpg"})}}><Text>{tag}</Text></Button>
+                          <Button bordered style={{padding:0,borderRadius:10,borderColor:'#01cca1'}} onPress={()=>{navigation.navigate('DealList',{tagName:tag,banner:"https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+tag+".jpg"})}}><Text>{tag}</Text></Button>
                       </View>)}
                   </Grid>
                 </View>
-                :<View/>:<View/>}
-               
-                 {this.props.navigation.state.params.dealDetail ?this.props.navigation.state.params.dealDetail._source.deal_lat && this.props.navigation.state.params.dealDetail._source.deal_lng ?
+                :<View/>}
+                {deal._source.deal_lat && deal._source.deal_lng ?
                 <View style ={styles.mapContainer}>
                   <MapView
                     style={styles.map}
                     region={{
-                      latitude: parseFloat(this.props.navigation.state.params.dealDetail._source.deal_lat),
-                      longitude: parseFloat(this.props.navigation.state.params.dealDetail._source.deal_lng),
+                      latitude: parseFloat(deal._source.deal_lat),
+                      longitude: parseFloat(deal._source.deal_lng),
                       latitudeDelta: 0.015,
                       longitudeDelta: 0.0121,
                     }}
                   >
                   <MapView.Marker
                       coordinate={{
-                        latitude:parseFloat(this.props.navigation.state.params.dealDetail._source.deal_lat),
-                        longitude: parseFloat(this.props.navigation.state.params.dealDetail._source.deal_lng)
+                        latitude:parseFloat(deal._source.deal_lat),
+                        longitude: parseFloat(deal._source.deal_lng)
                         }}
                       />
                   </MapView>
                 </View>
-                :<Text/>:<View/>}
+                :<Text/>}
             </View>
           </View>
-        </Content>
+        </Content>:<Content/>}
       </Container>
     );
   }

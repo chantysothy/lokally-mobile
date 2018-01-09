@@ -24,7 +24,7 @@ class Home extends Component {
 }
 
 componentWillMount() {
-    //Orientation.lockToPortrait();
+    Orientation.lockToPortrait();
     NetInfo.isConnected.fetch().then(isConnected => {
         if(isConnected === false){
             Alert.alert("Network","Please check your network connection to continue",
@@ -43,18 +43,19 @@ componentWillMount() {
     bannerImage = this.props.config ? this.props.config.app_banner : '';
 }
 tracker(event,routeValue){
+    let navigation = this.props.navigation;
     switch(routeValue){
         case 'EVENTS':
             tracker.trackEvent('Event',event._source.tags[0]);
-            this.props.navigation.navigate("EventDetail",{eventDetail:event,tagName:event._source.tags ? event._source.tags[0] : ""})
+            navigation.navigate("EventDetail",{eventDetail:event,tagName:event._source.tags ? event._source.tags[0] : ""})
         return          
         case 'NEWS':
             tracker.trackEvent('News',event._source.tags[0]);
-            this.props.navigation.navigate("NewsDetail",{newsDetail:event,tagName:event._source.tags ? event._source.tags[0] : ""})
+           navigation.navigate("NewsDetail",{newsDetail:event,tagName:event._source.tags ? event._source.tags[0] : ""})
         return   
         case 'DEALS':
             tracker.trackEvent('Deals',event._source.tags[0]);
-            this.props.navigation.navigate("DealDetail",{dealDetail:event,tagName:event._source.tags ? event._source.tags[0] : ""})
+            navigation.navigate("DealDetail",{dealDetail:event,tagName:event._source.tags ? event._source.tags[0] : ""})
         return    
         default :
             tracker.trackEvent('Home');
@@ -70,7 +71,7 @@ const navigation = this.props.navigation;
       <Container style={{ backgroundColor: "#fff" }}>
         <Header>
             <Button
-                onPress={() => this.props.navigation.navigate("DrawerOpen")}
+                onPress={() => navigation.navigate("DrawerOpen")}
                 transparent
             >
                 <Icon name="menu" />
@@ -79,10 +80,6 @@ const navigation = this.props.navigation;
             <Title>LOKALLY</Title>
           </Body>
           <Right/>
-              {/* <Button transparent>
-              <Icon name='md-stats' style={styles.headerTextIcon} onPress={()=>{this.openApp()}}/>
-              </Button> 
-            </Right>  */}
         </Header>
         <Content showsVerticalScrollIndicator={false}>
         {bannerImage.length > 0 ?
@@ -106,7 +103,7 @@ const navigation = this.props.navigation;
                     <Text  style={styles.trending}>TRENDING EVENTS</Text>
                 </View>
                 <View style={{ width:'25%',paddingRight:5}}>
-                    <Text onPress={()=>this.props.navigation.navigate('EventCategoryPage')}  style={styles.more}>MORE</Text>
+                    <Text onPress={() => navigation.navigate('EventCategoryPage')}  style={styles.more}>MORE</Text>
                 </View>
             </View>       
             <View>                
@@ -138,7 +135,7 @@ const navigation = this.props.navigation;
                     <Text  style={styles.trending}>TRENDING NEWS</Text>
                 </View>
                 <View style={{ width:'25%',paddingRight:5}}>
-                    <Text onPress={()=>this.props.navigation.navigate('NewsCategoryPage')} style={styles.more}>MORE</Text>
+                    <Text onPress={()=>navigation.navigate('NewsCategoryPage')} style={styles.more}>MORE</Text>
                 </View>
             </View>
             <View>
@@ -170,7 +167,7 @@ const navigation = this.props.navigation;
                     <Text  style={styles.trending}>TRENDING DEALS</Text>
                 </View>
                 <View style={{ width:'25%',paddingRight:5}}>
-                    <Text onPress={()=>this.props.navigation.navigate('DealCategoryPage')} style={styles.more}>MORE</Text>
+                    <Text onPress={() => navigation.navigate('DealCategoryPage')} style={styles.more}>MORE</Text>
                 </View>
             </View>
             <View>

@@ -103,7 +103,9 @@ class NewsDetail extends Component {
     this.props.navigation.navigate('ImageZoomRender',{url:this.props.navigation.state.params.newsDetail._source.news_images[0]})
   }
   render() {
-    //console.warn(JSON.stringify(this.props.navigation.state.params.newsDetail))
+    let news = this.props.navigation.state.params.newsDetail;
+    let tagName =   this.props.navigation.state.params.tagName;
+    let eventData = this.state.eventData;
     return (
       <Container>
         <Header
@@ -118,11 +120,11 @@ class NewsDetail extends Component {
            </Body>
           <Right>
               <Button transparent>
-                <Icon name='md-share' style={styles.headerTextIcon} onPress={()=>{this.share(this.props.navigation.state.params.newsDetail)}}/>
+                <Icon name='md-share' style={styles.headerTextIcon} onPress={()=>{this.share(news)}}/>
               </Button>
             </Right>
         </Header>
-
+        {news ?
         <Content
           showsVerticalScrollIndicator={false}
           style={{ backgroundColor: "#fff" }} >
@@ -130,7 +132,7 @@ class NewsDetail extends Component {
             <View>
               <TouchableHighlight onPress={()=>this.ZoomImage()}>
                 <Image
-                  source={{uri:this.props.navigation.state.params.newsDetail? this.props.navigation.state.params.newsDetail._source.news_images[0] :"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHiFmcCg3P_ZgzQq71S8y0NqAoLwtJF05xGYh-a9bIqfcxyYru"}}
+                  source={{uri:news ? news._source.news_images[0] :"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHiFmcCg3P_ZgzQq71S8y0NqAoLwtJF05xGYh-a9bIqfcxyYru"}}
                   style={styles.newsPoster}
                 />
               </TouchableHighlight>
@@ -141,22 +143,22 @@ class NewsDetail extends Component {
                     {this.state.userLike.user_liked === true ? 
                         <Button onPress={()=>{this.userLikes()}}>
                         <Icon active name="thumbs-up" />
-                        <Text>{this.state.eventData.likes}</Text><Text style={{paddingLeft:5}}>Likes</Text>
+                        <Text>{eventData.likes}</Text><Text style={{paddingLeft:5}}>Likes</Text>
                         </Button>
                     : <Button transparent onPress={()=>{this.userLikes()}}>
                         <Icon active name="thumbs-up" />
-                        <Text>{this.state.eventData.likes}</Text><Text style={{paddingLeft:5}}>Likes</Text>
+                        <Text>{eventData.likes}</Text><Text style={{paddingLeft:5}}>Likes</Text>
                     </Button>}
                   </Col>
                   <Col>
-                    <Button transparent onPress={()=>{this.props.navigation.navigate('Comments',{id:this.props.navigation.state.params.newsDetail._id,banner:this.props.navigation.state.params.newsDetail._source.news_images[0],dataReturn:this.state.eventData.comments,returnData: this.getLikesCount.bind(this)})}}>
+                    <Button transparent onPress={()=>{this.props.navigation.navigate('Comments',{id:news._id,banner:news._source.news_images[0],dataReturn:eventData.comments,returnData: this.getLikesCount.bind(this)})}}>
                       <Icon active name="chatbubbles" />
-                      <Text>{this.state.eventData.comments}</Text><Text style={{paddingLeft:5}}>Comments</Text>
+                      <Text>{eventData.comments}</Text><Text style={{paddingLeft:5}}>Comments</Text>
                       </Button>
                   </Col>
                   <Col style={{marginTop:15,marginRight:10}}>
-                    <TouchableOpacity style={styles.newsTypeView} onPress={()=>{this.props.navigation.navigate('NewsList',{tagName:this.props.navigation.state.params.tagName,banner:this.props.navigation.state.params.tagBanner ? this.props.navigation.state.params.tagBanner : "https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+this.props.navigation.state.params.tagName+".jpg"})}}>
-                      <Text style={styles.newsTypeText}>{this.props.navigation.state.params.tagName.toUpperCase()}</Text>
+                    <TouchableOpacity style={styles.newsTypeView} onPress={()=>{this.props.navigation.navigate('NewsList',{tagName:tagName,banner:this.props.navigation.state.params.tagBanner ? this.props.navigation.state.params.tagBanner : "https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+tagName+".jpg"})}}>
+                      <Text style={styles.newsTypeText}>{tagName.toUpperCase()}</Text>
                     </TouchableOpacity>
                   </Col>
                 </Grid>
@@ -166,62 +168,62 @@ class NewsDetail extends Component {
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
                     <TouchableOpacity>
-                      <Text style={styles.eventAddress} numberOfLines={2}>{this.props.navigation.state.params.newsDetail? this.props.navigation.state.params.newsDetail._source.news_title.toUpperCase() : <View/>}</Text>
+                      <Text style={styles.eventAddress} numberOfLines={2}>{news ? news._source.news_title.toUpperCase() : <Text/>}</Text>
                     </TouchableOpacity>
                   </Col>                  
                 </Grid>
+                {news._source.news_author ? 
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
                     <Text style={styles.newsLink}>
-                      Posted By: { this.props.navigation.state.params.newsDetail ? this.props.navigation.state.params.newsDetail._source.news_author :<View/>} at  {this.props.navigation.state.params.newsDetail ? this.props.navigation.state.params.newsDetail._source.news_date:<View/>}
+                      Posted By: { news._source.news_author} {news._source.news_date ? `at `+news._source.news_date : ""}<Text/>
                     </Text>
                     </Col>
-                </Grid>
+                </Grid>:<View/>}
+                {news._source.news_body ?
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col>
                       {/* {this.props.navigation.state.params.newsDetail._source.news_body
                                 .split('. ').map((item,key) => <Text style={styles.displaylinebreak} key={key}>{item}</Text>)} */}
                      <HTMLView
-                        value={this.props.navigation.state.params.newsDetail ? this.props.navigation.state.params.newsDetail._source.news_body:<View/>}					
-                        stylesheet={styles.displaylinebreak}	
-                    />
+                        value={news._source.news_body}					
+                        stylesheet={styles.displaylinebreak}/>
                     </Col>
-                </Grid>
+                </Grid>:<View/>}
               </View>
-              {this.props.navigation.state.params.newsDetail ? this.props.navigation.state.params.newsDetail._source.tags && this.props.navigation.state.params.newsDetail._source.tags.length > 1 ?
+              {news._source.tags && news._source.tags.length > 1 ?
                 <View style={{ paddingLeft: 10,paddingBottom:20 }}>
-                  {/* <Text style={styles.newsHeader}>Tags</Text>                     */}
                   <Grid>
-                    {this.props.navigation.state.params.newsDetail._source.tags.map((tag,key)=>
+                    {news._source.tags.map((tag,key)=>
                       <View style={{ flexDirection: "row",paddingRight:5,marginTop:10}} key={key}>
                           <Button bordered style={{padding:0,borderRadius:10,borderColor:'#01cca1'}} onPress={()=>{this.props.navigation.navigate('NewsList',{tagName:tag,banner:"https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+tag+".jpg"})}}><Text>{tag}</Text></Button>
                       </View>)}
                   </Grid>
                 </View>
-                :<View/>:<View/>}
+                :<View/>}
             </View>
-            {this.props.navigation.state.params.newsDetail ?this.props.navigation.state.params.newsDetail._source.news_location_lat && this.props.navigation.state.params.newsDetail._source.news_location_lng ?
+            {news._source.news_location_lat && news._source.news_location_lng ?
             <View style ={styles.mapContainer}>
               <MapView
                 style={styles.map}
                 region={{
-                  latitude: parseFloat(this.props.navigation.state.params.newsDetail._source.news_location_lat),
-                  longitude: parseFloat(this.props.navigation.state.params.newsDetail._source.news_location_lng),
+                  latitude: parseFloat(news._source.news_location_lat),
+                  longitude: parseFloat(news._source.news_location_lng),
                   latitudeDelta: 0.015,
                   longitudeDelta: 0.0121,
                 }}
               >
               <MapView.Marker
                   coordinate={{
-                    latitude:parseFloat(this.props.navigation.state.params.newsDetail._source.news_location_lat),
-                    longitude: parseFloat(this.props.navigation.state.params.newsDetail._source.news_location_lng)
+                    latitude:parseFloat(news._source.news_location_lat),
+                    longitude: parseFloat(news._source.news_location_lng)
                     }}
                   />
               </MapView>
             </View>
-            :<Text/>:<View/>}
+            :<Text/>}
           </View>
-        </Content>
+        </Content>:<Content/>}
       </Container>
     );
   }

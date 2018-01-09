@@ -70,11 +70,12 @@ export default class EventCategoryPage extends Component {
     }
 
     render() {
+      let navigation =  this.props.navigation;
       return (
         <Container>
           <Header>
             <Button
-              onPress={() => this.props.navigation.navigate("DrawerOpen")}
+              onPress={() => navigation.navigate("DrawerOpen")}
               transparent>
               <Icon name="menu" />
             </Button>
@@ -82,7 +83,7 @@ export default class EventCategoryPage extends Component {
               <Title>Events Category</Title>
               <Button
               style={{alignSelf:'flex-end',marginLeft:deviceWidth/4+20,marginTop:10}}
-              onPress={() => this.props.navigation.navigate("SearchContainer",{search:this.state.eventsCategory,routePath:'EventList'})}
+              onPress={() => navigation.navigate("SearchContainer",{search:this.state.eventsCategory,routePath:'EventList'})}
               transparent>
               <Icon  name="search" />
             </Button>

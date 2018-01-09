@@ -70,11 +70,12 @@ export default class NewsCategoryPage extends Component {
     }
 
     render() {
+      let navigation =  this.props.navigation;
       return (
         <Container>
           <Header>
             <Button
-              onPress={() => this.props.navigation.navigate("DrawerOpen")}
+              onPress={() => navigation.navigate("DrawerOpen")}
               transparent
             >
               <Icon name="menu" />
@@ -83,7 +84,7 @@ export default class NewsCategoryPage extends Component {
               <Title>News Category</Title>
               <Button
               style={{alignSelf:'flex-end',marginLeft:deviceWidth/4+30,marginTop:10}}
-              onPress={() => this.props.navigation.navigate("SearchContainer",{search:this.state.newsCategory,routePath:'NewsList'})}
+              onPress={() =>navigation.navigate("SearchContainer",{search:this.state.newsCategory,routePath:'NewsList'})}
               transparent>
               <Icon  name="search" />
             </Button>

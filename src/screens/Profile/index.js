@@ -32,7 +32,6 @@ class Profile extends Component {
         :
         this.props.tokenRenual(this.props.navigation.state.params.accessToken).then((data)=> {
         this.props.getUser(this.props.token).then(data=>{
-          //console.warn("5",this.props.navigation.state.params.accessToken,this.props.token)
           {this.props.profile ? 
             this.setState({dataTest:this.props.profile})
           :''}       
@@ -40,16 +39,10 @@ class Profile extends Component {
         })
     })}
   }
-  /*deleteRow(secId: string, rowId: string, rowMap: any) {
-    rowMap[`${secId}${rowId}`].props.closeRow();
-    const newData = [...this.state.listViewData];
-    newData.splice(rowId, 1);
-    this.setState({ listViewData: newData });
-  }*/
 
   render() {
-    //console.warn("er",this.props.token,this.props.error,this.props.profile)
-    const navigation = this.props.navigation;
+    let navigation = this.props.navigation;
+    let profile = this.state.dataTest;
     return (
       <Container>
         <Image
@@ -67,102 +60,95 @@ class Profile extends Component {
                 style={styles.profilePic}
               />
             </View>
-            {/* <View style={styles.profileInfo}>
-              <Text style={styles.profileUser}>
-                {this.props.profile ? this.props.profile.hits.hits[0]._source.name : ''}
-              </Text>
-            </View> */}
           </View>
-          {this.state.dataTest.length === 0 ? <Spinner style={{marginTop:200}} color='white'/>
+          {profile.length === 0 ? <Spinner style={{marginTop:200}} color='white'/>
           :<Content
             showsVerticalScrollIndicator={false}
-            style={{ backgroundColor: "#fff" }}
-          >
+            style={{ backgroundColor: "#fff" }}>
             <View style={{ backgroundColor: "#fff" }}>
               <View style={styles.newsContent}>
               <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
                     <Grid >
                       <Col style={{ flexDirection: "row" }}>
-                      {this.state.dataTest._source.name ?
+                      {profile._source.name ?
                         <Text style={styles.newsHeader}>
-                          Name:  <Text style={styles.newsHeaderValue}>{this.state.dataTest._source.name}</Text>
+                          Name:  <Text style={styles.newsHeaderValue}>{profile._source.name}</Text>
                         </Text>  
                       :<Text/>}                    
                       </Col>
                     </Grid>
                   </Col>
-                  {this.state.dataTest.length === 0 ? <View/>
+                  {profile.length === 0 ? <View/>
                   : <Col style={{ flexDirection: "row" }}>
                     <Grid>
                       <Col style={{ flexDirection: "row" ,alignSelf:'flex-end',marginBottom:-40,marginLeft:deviceWidth/4+10}}>
-                        <Button transparent style={{marginTop:-70}} onPress={()=>{this.props.navigation.navigate('UpdateUser',{userProfileData:this.props.profile,Data:this.props.profile,accessToken:this.props.navigation.state.params.accessToken})}}>
+                        <Button transparent style={{marginTop:-70}} onPress={()=>{navigation.navigate('UpdateUser',{userProfileData:this.props.profile,Data:this.props.profile,accessToken:this.props.navigation.state.params.accessToken})}}>
                           <Icon name="color-filter" style={styles.newsHeader} ></Icon>
-                          {/* <Icon theme={fontAwesome} name='icon-edit' />  */}
                         </Button> 
                       </Col>
                   </Grid>
                   </Col>}
                 </Grid>
-                {this.state.dataTest._source.dob ?
+                {profile._source.dob ?
                 <Grid style={{ paddingBottom: 20 }}>
                     <Col style={{ flexDirection: "row" }}>
                     <Text style={styles.newsHeader}>
-                      DOB:  <Text style={styles.newsHeaderValue}>{this.state.dataTest._source.dob}</Text>
+                      DOB:  <Text style={styles.newsHeaderValue}>{profile._source.dob}</Text>
                     </Text>
                   </Col>
                 </Grid>
                :<View/>}
-               {this.state.dataTest._source.gender ?
+               {profile._source.gender ?
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
                     <Text style={styles.newsHeader}>
-                      Gender:  <Text style={styles.newsHeaderValue}>{this.state.dataTest._source.gender}</Text>
+                      Gender:  <Text style={styles.newsHeaderValue}>{profile._source.gender}</Text>
                     </Text>
                   </Col>
                 </Grid>
                 :<View/>}
-                {this.state.dataTest._source.email ?
+                {profile._source.email ?
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
                     <Text style={styles.newsHeader}>
-                      Email:  <Text style={styles.newsHeaderValue}>{this.state.dataTest._source.email}</Text>
+                      Email:  <Text style={styles.newsHeaderValue}>{profile._source.email}</Text>
                     </Text>
                   </Col>
                 </Grid>
                 :<View/>}
-                {this.state.dataTest._source.mobile_number ?
+                {profile._source.mobile_number ?
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
                     <Text style={styles.newsHeader}>
-                      Mobile Number:  <Text style={styles.newsHeaderValue}>{this.state.dataTest._source.mobile_number}</Text>
+                      Mobile Number:  <Text style={styles.newsHeaderValue}>{profile._source.mobile_number}</Text>
                     </Text>
                   </Col>
                 </Grid>
                 :<View/>}
-                {this.state.dataTest._source.address1 || this.state.dataTest._source.address2 || this.state.dataTest._source.city ?
+                {profile._source.address1 || profile._source.address2 || profile._source.city ?
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
                     <Text style={styles.newsHeader}>
-                      Address:  <Text style={styles.newsHeaderValue}>{this.state.dataTest._source.address1} {this.state.dataTest._source.address1 ? "," :''} {this.state.dataTest._source.address2} {this.state.dataTest._source.address2 ? "," :''} {this.state.dataTest._source.city}</Text>
+                      Address:  <Text style={styles.newsHeaderValue}>{profile._source.address1+` , `}  {profile._source.address2+` , `} {profile._source.city}</Text>
                     </Text>
                   </Col>
                 </Grid>
                 :<View/>}
-                {this.state.dataTest._source.pincode ?
+                {profile._source.pincode ?
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
                     <Text style={styles.newsHeader}>
-                      Pincode:  <Text style={styles.newsHeaderValue}>{this.state.dataTest._source.pincode}</Text>
+                      Pincode:  <Text style={styles.newsHeaderValue}>{profile._source.pincode}</Text>
                     </Text>
                   </Col>
                 </Grid>
                 :<View/>}
-                {this.state.dataTest._source.tags.length > 0 ?
+                {profile._source.tags.length > 0 ?
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
                     <Text style={styles.newsHeader}>                    
-                      Interested in: {this.state.dataTest._source.tags
+                      Interested in: {profile._source.tags
                                       .map((tag,i) => <Text key={i} style={styles.newsHeaderValue}>{tag}</Text>)
                                       .reduce((prev, curr) => [prev,<Text style={styles.newsHeaderValue}> , </Text>, curr])}
                     </Text>
@@ -191,107 +177,3 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);
-
-
-/*
-{this.props.profile ?
-          <Content
-            showsVerticalScrollIndicator={false}
-            style={{ backgroundColor: "#fff" }}
-          >
-            <View style={{ backgroundColor: "#fff" }}>
-              <View style={styles.newsContent}>
-              <Grid style={{ paddingBottom: 20 }}>
-                {this.props.profile ? this.props.profile.hits.hits[0]._source.name ?
-                  <Col style={{ flexDirection: "row" }}>
-                    <Grid >
-                      <Col style={{ flexDirection: "row" }}>
-                        <Text style={styles.newsHeader}>
-                          Name:  <Text style={styles.newsHeaderValue}>{this.props.profile ? this.props.profile.hits.hits[0]._source.name :''}</Text>
-                        </Text>                      
-                      </Col>
-                    </Grid>
-                  </Col>
-                  :<View/>:<View/>}
-                  {this.props.profile ?
-                  <Col style={{ flexDirection: "row" }}>
-                    <Grid>
-                      <Col style={{ flexDirection: "row" ,alignSelf:'flex-end',marginBottom:-40,marginLeft:deviceWidth/4+10}}>
-                        <Button transparent style={{marginTop:-70}} onPress={()=>{this.props.navigation.navigate('UpdateUser',{userProfileData:this.props.profile,Data:this.props.profile.hits.hits[0]})}}>
-                          <Icon name="color-filter" style={styles.newsHeader} ></Icon>
-                          </Button> 
-                          </Col>
-                      </Grid>
-                      </Col>:<View/>}
-                    </Grid>
-                    {this.props.profile ? this.props.profile.hits.hits[0]._source.dob ?
-                    <Grid style={{ paddingBottom: 20 }}>
-                        <Col style={{ flexDirection: "row" }}>
-                        <Text style={styles.newsHeader}>
-                          DOB:  <Text style={styles.newsHeaderValue}>{this.props.profile ? this.props.profile.hits.hits[0]._source.dob :''}</Text>
-                        </Text>
-                      </Col>
-                    </Grid>
-                   :<View/>:<View/>}
-                   {this.props.profile ? this.props.profile.hits.hits[0]._source.gender ?
-                    <Grid style={{ paddingBottom: 20 }}>
-                      <Col style={{ flexDirection: "row" }}>
-                        <Text style={styles.newsHeader}>
-                          Gender:  <Text style={styles.newsHeaderValue}>{this.props.profile ? this.props.profile.hits.hits[0]._source.gender :''}</Text>
-                        </Text>
-                      </Col>
-                    </Grid>
-                    :<View/>:<View/>}
-                    {this.props.profile ? this.props.profile.hits.hits[0]._source.email ?
-                    <Grid style={{ paddingBottom: 20 }}>
-                      <Col style={{ flexDirection: "row" }}>
-                        <Text style={styles.newsHeader}>
-                          Email:  <Text style={styles.newsHeaderValue}>{this.props.profile ? this.props.profile.hits.hits[0]._source.email :''}</Text>
-                        </Text>
-                      </Col>
-                    </Grid>
-                    :<View/>:<View/>}
-                    {this.props.profile ?this.props.profile.hits.hits[0]._source.mobile_number ?
-                    <Grid style={{ paddingBottom: 20 }}>
-                      <Col style={{ flexDirection: "row" }}>
-                        <Text style={styles.newsHeader}>
-                          Mobile Number:  <Text style={styles.newsHeaderValue}>{this.props.profile ? this.props.profile.hits.hits[0]._source.mobile_number :''}</Text>
-                        </Text>
-                      </Col>
-                    </Grid>
-                    :<View/>:<View/>}
-                    {this.props.profile ?this.props.profile.hits.hits[0]._source.address1 ?
-                    <Grid style={{ paddingBottom: 20 }}>
-                      <Col style={{ flexDirection: "row" }}>
-                        <Text style={styles.newsHeader}>
-                          Address:  <Text style={styles.newsHeaderValue}>{this.props.profile ?this.props.profile.hits.hits[0]._source.address1 :''} {this.props.profile.hits.hits[0]._source.address2 ? "," :''} {this.props.profile ? this.props.profile.hits.hits[0]._source.address2 :''} {this.props.profile.hits.hits[0]._source.city ? "," :''} {this.props.profile.hits.hits[0]._source.city ? this.props.profile.hits.hits[0]._source.city :''}</Text>
-                        </Text>
-                      </Col>
-                    </Grid>
-                    :<View/>:<View/>}
-                    {this.props.profile ? this.props.profile.hits.hits[0]._source.pincode ?
-                    <Grid style={{ paddingBottom: 20 }}>
-                      <Col style={{ flexDirection: "row" }}>
-                        <Text style={styles.newsHeader}>
-                          Pincode:  <Text style={styles.newsHeaderValue}>{this.props.profile ? this.props.profile.hits.hits[0]._source.pincode:''}</Text>
-                        </Text>
-                      </Col>
-                    </Grid>
-                    :<View/>:<View/>}
-                    {this.props.profile ? this.props.profile.hits.hits[0]._source.tags.length > 0 ?
-                    <Grid style={{ paddingBottom: 20 }}>
-                      <Col style={{ flexDirection: "row" }}>
-                        <Text style={styles.newsHeader}>                    
-                          Interested in: {this.props.profile.hits.hits[0]._source.tags
-                                          .map((tag,i) => <Text key={i} style={styles.newsHeaderValue}>{tag}</Text>)
-                                          .reduce((prev, curr) => [prev,<Text style={styles.newsHeaderValue}> , </Text>, curr])}
-                        </Text>
-                      </Col>
-                    </Grid>
-                    :<View/>:<View/>}
-                  </View>
-                </View>
-              </Content> : <View/>}
-
-
-              */

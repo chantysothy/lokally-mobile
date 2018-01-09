@@ -1,19 +1,6 @@
 import React, { Component } from "react";
 import {Platform,Image,AsyncStorage,TouchableOpacity,View as RNView,Dimensions,Linking,StatusBar,Alert} from "react-native";
-import {
-  Container,
-  Content,
-  Text,
-  Button,
-  Icon,
-  Item,
-  Input,
-  View,
-  Toast,
-  Left,
-  Right,
-  Form,Label,Spinner
-} from "native-base";
+import {Container,Content,Text, Button, Icon, Item, Input, View, Toast, Left, Right, Form,Label,Spinner} from "native-base";
 import styles from "./styles";
 import commonColor from "../../theme/variables/commonColor";
 import { DatePickerDialog } from 'react-native-datepicker-dialog'
@@ -85,24 +72,16 @@ class Registration extends Component {
   }
 
   handleDelete = index => {
-    //tag deleted, remove from our tags array
     let tagsSelected = this.state.tagsSelected;
     tagsSelected.splice(index, 1);
     this.setState({ tagsSelected });
   }
 
   handleAddition = contact => {
-    //suggestion clicked, push it to our tags array
     if(this.state.tagsSelected.includes(contact) === false){
       this.setState({ tagsSelected: this.state.tagsSelected.concat([contact]) });
     }
   }
-  /*componentWillUnmount(){
-    OneSignal.removeEventListener('received', this.onReceived);
-    OneSignal.removeEventListener('opened', this.onOpened);
-    OneSignal.removeEventListener('registered', this.onRegistered);
-    OneSignal.removeEventListener('ids', this.onIds);
-  }*/
   
   signUp(){
     if(this.state.name == '' || this.state.email == '' || this.state.pincode == ''){
@@ -134,29 +113,9 @@ class Registration extends Component {
             "device_infos" :oneSignalKey
             }
       }
-      /*let userObj={
-        "mobile_number" : this.props.navigation.state.params.phoneNo,  
-        "name" : this.state.name,
-        "address1" : this.state.addressLine1,
-        "address2" : this.state.addressLine2,
-        "dob" : this.state.dobText === moment(new Date()).format('DD-MMM-YYYY') ? '' :this.state.dobText,
-        "latitude" : "",
-        "longitude" : "",
-        "email" : this.state.email,
-        "gender" : this.state.gender,
-        "state" : 'Tamilnadu',
-        "city" : this.state.city,
-        "pincode" : this.state.pincode,
-        "tags" : AllTag,
-        "device_infos" :oneSignalKey
-      }*/
-      //console.warn(JSON.stringify(userObj),accessTokenValue)
       this.setState({disable :true})
       this.props.userregister(userObj,accessTokenValue).then((data)=>{
-        //console.warn(JSON.stringify(this.props.registerStatus))
-        //console.warn("status",JSON.stringify(this.props.registerStatus))
          if(this.props.registerStatus.status === "success"){
-            //console.warn(this.props.navigation.state.params.userDetail,this.props.navigation.state.params.userDetail.userid,"token",accessTokenValue)
             AsyncStorage.setItem('userId',this.props.navigation.state.params.userDetail.userid);
             AsyncStorage.setItem('accessToken',accessTokenValue);
             Alert.alert(
@@ -182,7 +141,6 @@ class Registration extends Component {
     
   }
   render() {
-    //console.warn(JSON.stringify(this.props.navigation.state.params.userDetail),JSON.stringify(this.props.navigation.state.params.phoneNo))
     var gender = [
       {label: 'Male   ', value: 'Male' },
       {label: 'Female', value: 'Female' }

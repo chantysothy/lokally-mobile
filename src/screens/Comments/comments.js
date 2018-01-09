@@ -90,7 +90,6 @@ class Comments extends Component {
               this.props.getComments(this.props.navigation.state.params.id,0,this.props.totalData+1).then((data)=>{
                 this.setState({comments:data,isfetching:false,commented:false,disable:false})
               })
-              //this.props.navigation.navigate('Comments',{id:id,banner:banner,dataReturn:this.props.totalData+1})
             }else{
                 Alert.alert("Failure","Something went wrong please try again after some time")
                 this.setState({isfetching:false,commented:false,disable:false})

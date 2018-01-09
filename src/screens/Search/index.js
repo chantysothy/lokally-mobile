@@ -1,22 +1,6 @@
 import React, { Component } from "react";
 import { Image, Dimensions, TouchableOpacity, Platform } from "react-native";
-import {
-  Container,
-  Header,
-  Content,
-  Text,
-  Button,
-  Icon,
-  Title,
-  Right,
-  Body,
-  Left,
-  View,
-  Spinner,
-  Card,
-  CardItem,
-  Thumbnail
-} from "native-base";
+import {Container,Header,Content,Text, Button, Icon, Title, Right, Body, Left, View,Spinner, Card, CardItem, Thumbnail} from "native-base";
 import SearchBar from "react-native-searchbar";
 import Orientation from "react-native-orientation";
 const headerLogo = require("../../assets/logo.png");
@@ -90,7 +74,6 @@ export default class SearchContainer extends Component {
     }
   }
   render() {
-    //console.warn("res",this.state.results.length)
     return (
       <Container>
         <Header hasTabs>

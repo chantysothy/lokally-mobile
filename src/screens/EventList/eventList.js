@@ -36,7 +36,6 @@ componentWillMount() {
     this.setState({isFetching:true})
     count+=5;
     this.props.getAllEvents(this.props.navigation.state.params.tagName,count).then(data => {
-      //console.warn("inside",JSON.stringify(this.props.listOfEvents))
       this.setState({
         fetched: true,
         isFetching:false
@@ -46,7 +45,9 @@ componentWillMount() {
 follow(value){
   if(value==="Follow"){
     this.setState({follow:"Following"})
-  }else this.setState({follow:"Follow"})
+  }else{
+    this.setState({follow:"Follow"})
+  }
 }
 render() {
   const navigation = this.props.navigation;
@@ -105,7 +106,7 @@ render() {
                   style={{ flexDirection: "row" }}
                   onPress={() => {
                       tracker.trackEvent('Event',this.props.navigation.state.params.tagName);
-                      this.props.navigation.navigate("EventDetail",{eventDetail:event,tagName:this.props.navigation.state.params.tagName,tagBanner:this.props.navigation.state.params.banner})}
+                      navigation.navigate("EventDetail",{eventDetail:event,tagName:this.props.navigation.state.params.tagName,tagBanner:this.props.navigation.state.params.banner})}
                     }>
                   <View style={styles.newsContentWrap}>
                     <Text numberOfLines={2} style={styles.HeaderTitle}>

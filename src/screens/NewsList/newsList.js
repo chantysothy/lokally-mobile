@@ -51,7 +51,8 @@ componentWillMount() {
 }
 
   render() {
-    const navigation = this.props.navigation;
+    let navigation = this.props.navigation;
+    let tagName = this.props.navigation.state.params.tagName;
     return (
       <Container style={{ backgroundColor: "#fff" }}>
         <Header>
@@ -78,7 +79,7 @@ componentWillMount() {
                       : styles.ioschannelHeader
                   }
                 >
-                  {this.props.navigation.state.params.tagName.toUpperCase()}
+                  {tagName.toUpperCase()}
                 </Text>
                 <Button
                   rounded
@@ -112,8 +113,8 @@ componentWillMount() {
             <TouchableOpacity key={key}
               style={{ flexDirection: "row" }}
               onPress={() =>{
-                  tracker.trackEvent('News',this.props.navigation.state.params.tagName); 
-                  this.props.navigation.navigate("NewsDetail",{newsDetail:news,tagName:this.props.navigation.state.params.tagName,tagBanner:this.props.navigation.state.params.banner})}
+                  tracker.trackEvent('News',tagName); 
+                  navigation.navigate("NewsDetail",{newsDetail:news,tagName:tagName,tagBanner:this.props.navigation.state.params.banner})}
                 }>
               <Card style={styles.card} >
               <CardItem style={styles.cardHeader} header>

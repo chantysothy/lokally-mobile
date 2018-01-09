@@ -47,7 +47,8 @@ fetchNextData(){
 }
 
   render() {
-    const navigation = this.props.navigation;
+    let navigation = this.props.navigation;
+    let tagName = this.props.navigation.state.params.tagName;
     return (
       <Container style={{ backgroundColor: "#fff" }}>
         <Header>
@@ -71,7 +72,7 @@ fetchNextData(){
                       ? styles.achannelHeader
                       : styles.ioschannelHeader
                   }>
-                  {this.props.navigation.state.params.tagName.toUpperCase()}
+                  {tagName.toUpperCase()}
                 </Text>
                 <Button
                   rounded
@@ -105,8 +106,8 @@ fetchNextData(){
               <TouchableOpacity key={key}
               style={{ flexDirection: "row" }}
               onPress={() => {
-                    tracker.trackEvent('Deal',this.props.navigation.state.params.tagName);
-                    this.props.navigation.navigate("DealDetail",{dealDetail:deal,tagName:this.props.navigation.state.params.tagName,tagBanner:this.props.navigation.state.params.banner})}
+                    tracker.trackEvent('Deal',tagName);
+                    navigation.navigate("DealDetail",{dealDetail:deal,tagName:tagName,tagBanner:this.props.navigation.state.params.banner})}
                   }>
               <Card style={styles.card} >
               <CardItem style={styles.cardHeader} header>

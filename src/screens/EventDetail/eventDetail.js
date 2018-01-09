@@ -7,14 +7,11 @@ import styles from "./styles";
 import MapView from 'react-native-maps';
 import HTMLView from 'react-native-htmlview';
 import Comments from './../Comments';
-import {eventsLike,getUserLike,share} from '../../utilities/config';
+import { eventsLike,getUserLike,share } from '../../utilities/config';
 import {  GoogleAnalyticsTracker  } from 'react-native-google-analytics-bridge';
 const tracker = new GoogleAnalyticsTracker('UA-110943333-1');
 import Orientation from 'react-native-orientation';
 import Share from 'react-native-share';
-
-const screen = Dimensions.get('window');
-const ASPECT_RATIO = screen.width / screen.height;
 const find = ' ';
 const re = new RegExp(find, 'g');
 
@@ -43,15 +40,17 @@ class EventDetail extends Component {
   }
 
   getLikesDetail(){
-    getUserLike(this.props.navigation.state.params.eventDetail._id,this.state.access).then((val)=>{
+    let id = this.props.navigation.state.params.eventDetail._id;
+    let accessToken = this.state.access
+    getUserLike(id,accessToken).then((val)=>{
       this.setState({userLike:val})
     }).catch(err=>{
       {this.props.error.length === 0 
         ? ""
-        :this.props.tokenRenual(this.state.access).then((data)=> {
+        :this.props.tokenRenual(accessToken).then((data)=> {
           this.props.getUser(this.props.token).then(data=>{
             AsyncStorage.setItem('accessToken',this.props.token);
-            getUserLike(this.props.navigation.state.params.eventDetail._id,this.state.access).then((val)=>{
+            getUserLike(id,accessToken).then((val)=>{
               this.setState({userLike:val})
             })
           })
@@ -75,17 +74,6 @@ class EventDetail extends Component {
       type: SendIntentAndroid.TEXT_PLAIN
     })
     share(shareObj,this.state.access).then((data)=>console.log(JSON.stringify(data)))
-    /*let obj = {
-      title: event._source.event_title,
-      message:"Event Title:"+event._source.event_title+"\n"+"Date:"+event._source.event_date+"\n"+"Address:"+event._source.event_address+"\n"+"From Time:"+event._source.event_time_from+"\n"+"To Time:"+event._source.event_time_to+"\n"+"Click link to get direction "+url,
-      url: "http://facebook.github.io/react-native/",
-      subject: "Share Link" 
-    }
-    Share.open(obj)
-            .then(data=>{
-              share(shareObj,this.state.access).then((data)=>console.warn(JSON.stringify(data)))
-            })
-            .catch((err) => { err && console.warn(err); })*/
    }
    openMap(address){
     SendIntentAndroid.openMaps(address);
@@ -134,7 +122,7 @@ class EventDetail extends Component {
       "item_id" : this.props.navigation.state.params.eventDetail._id  
     }        
     this.props.userLike(obj,this.state.access).then((data)=>{
-      this.getLikesCount()
+      this.getLikesCount(this.props.navigation.state.params.eventDetail._id)
       this.getLikesDetail()
     })
     {this.props.error.length === 0 
@@ -147,32 +135,31 @@ class EventDetail extends Component {
       })
     }
    }
-  /*randomColor() {
-    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-  }*/
   render() {
-    //console.warn(JSON.stringify(this.props.navigation.state.params.eventDetail ))
-    //console.warn("jhg",id)
-    //console.warn("err",this.props.error,"yok",this.props.token)
+    let event = this.props.navigation.state.params.eventDetail;
+    let eventData = this.state.eventData;
+    let tagName = this.props.navigation.state.params.tagName;
+    let navigation = this.props.navigation;
     return (
       <Container>
         <Header
           style={styles.headerStyle}>
           <Body
             style={{ flexDirection: "row"}}>
-            <Button transparent onPress={() => this.props.navigation.goBack()}>
+            <Button transparent onPress={() => navigation.goBack()}>
               <Icon active name="arrow-back" style={styles.headerIcons} />
             </Button>
            </Body>
           <Right>
               <Button transparent>
-              <Icon name='ios-calendar' style={styles.headerTextIcon} onPress={()=>{this.addEventToCalender(this.props.navigation.state.params.eventDetail)}}/>
+              <Icon name='ios-calendar' style={styles.headerTextIcon} onPress={()=>{this.addEventToCalender(event)}}/>
               </Button>
               <Button transparent>
-              <Icon name='md-share' style={styles.headerTextIcon} onPress={()=>{this.share(this.props.navigation.state.params.eventDetail)}}/>
+              <Icon name='md-share' style={styles.headerTextIcon} onPress={()=>{this.share(event)}}/>
               </Button>
             </Right>
         </Header>
+        {event ?
         <Content
           showsVerticalScrollIndicator={false}
           style={{ backgroundColor: "#fff" }}>
@@ -180,7 +167,7 @@ class EventDetail extends Component {
             <View >
             <TouchableHighlight onPress={()=>this.ZoomImage()}>
               <Image
-                source={{uri:this.props.navigation.state.params.eventDetail  ? this.props.navigation.state.params.eventDetail._source.event_images ? this.props.navigation.state.params.eventDetail._source.event_images[0] : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrHY5zywHTlDyhezSmEXnF7aan7ezaIh62ElV56Jqre-kXaIoHZw" : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrHY5zywHTlDyhezSmEXnF7aan7ezaIh62ElV56Jqre-kXaIoHZw"}}
+                source={{uri:event._source.event_images ? event._source.event_images[0] : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrHY5zywHTlDyhezSmEXnF7aan7ezaIh62ElV56Jqre-kXaIoHZw"}}
                 style={styles.newsPoster}/>
               </TouchableHighlight>
             </View>
@@ -190,23 +177,23 @@ class EventDetail extends Component {
                     {this.state.userLike.user_liked === true ? 
                       <Button onPress={()=>{this.userLikes()}}>
                         <Icon active name="thumbs-up" />
-                        <Text>{this.state.eventData.likes}</Text><Text style={{paddingLeft:5}}>Likes</Text>
+                        <Text>{eventData.likes}</Text><Text style={{paddingLeft:5}}>Likes</Text>
                       </Button>
                     : <Button transparent onPress={()=>{this.userLikes()}}>
                         <Icon active name="thumbs-up" />
-                        <Text>{this.state.eventData.likes}</Text><Text style={{paddingLeft:5}}>Likes</Text>
+                        <Text>{eventData.likes}</Text><Text style={{paddingLeft:5}}>Likes</Text>
                     </Button>}
                       
                   </Col>
                   <Col >
-                    <Button transparent onPress={()=>{this.props.navigation.navigate('Comments',{id:this.props.navigation.state.params.eventDetail._id,banner:this.props.navigation.state.params.eventDetail._source.event_images[0],dataReturn:this.state.eventData.comments,returnData: this.getLikesCount.bind(this)})}}>
+                    <Button transparent onPress={()=>{navigation.navigate('Comments',{id:event._id,banner:event._source.event_images[0],dataReturn:eventData.comments,returnData: this.getLikesCount.bind(this)})}}>
                       <Icon active name="chatbubbles" />
-                      <Text>{this.state.eventData.comments}</Text><Text style={{paddingLeft:5}}>Comments</Text>
+                      <Text>{eventData.comments}</Text><Text style={{paddingLeft:5}}>Comments</Text>
                       </Button>
                   </Col>
                   <Col style={{marginTop:15,marginRight:10}}>
-                    <TouchableOpacity style={styles.newsTypeView} onPress={()=>{this.props.navigation.navigate('EventList',{tagName:this.props.navigation.state.params.tagName,banner:this.props.navigation.state.params.tagBanner ? this.props.navigation.state.params.tagBanner :"https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+this.props.navigation.state.params.tagName+".jpg"})}}>
-                      <Text style={styles.newsTypeText}>{this.props.navigation.state.params.tagName ? this.props.navigation.state.params.tagName.toUpperCase() : this.props.navigation.state.params.eventDetail._source.tags[0].toUpperCase()}</Text>
+                    <TouchableOpacity style={styles.newsTypeView} onPress={()=>{navigation.navigate('EventList',{tagName:tagName,banner:this.props.navigation.state.params.tagBanner ? this.props.navigation.state.params.tagBanner :"https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+tagName+".jpg"})}}>
+                      <Text style={styles.newsTypeText}>{tagName ? tagName.toUpperCase() : event._source.tags[0].toUpperCase()}</Text>
                     </TouchableOpacity>
                   </Col>
                 </Grid>
@@ -216,115 +203,113 @@ class EventDetail extends Component {
                 <Grid style={{ paddingBottom: 20 }}>
                   <Col style={{ flexDirection: "row" }}>
                     <TouchableOpacity>
-                      <Text style={styles.eventAddress} numberOfLines={2}>{this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_title.toUpperCase() :''}</Text>
+                      <Text style={styles.eventAddress} numberOfLines={2}>{event._source.event_title.toUpperCase()}</Text>
                     </TouchableOpacity>
                   </Col>
                 </Grid>
-                {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_description ?
+                {event._source.event_description ?
                 <HTMLView
-                    value={this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_description :'<p></p>'}					
+                    value={event._source.event_description}					
                     stylesheet={styles.htmlContent}	
                 />
-                :<View/>:<View/>}
-                 {this.props.navigation.state.params.eventDetail ?  this.props.navigation.state.params.eventDetail._source.applicable_for ?
+                :<View/>}
+                 {event._source.applicable_for ?
                  <Grid>
                   <Col style={{ flexDirection: "row" }}>
                     <TouchableOpacity>
-                      <Text style={styles.newsHeader} numberOfLines={2}>Applicable for : {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.applicable_for :''}</Text>
+                      <Text style={styles.newsHeader} numberOfLines={2}>Applicable for : {event._source.applicable_for}</Text>
                     </TouchableOpacity>
                   </Col>
                 </Grid>
-                :<View/>:<View/>}
+                :<View/>}
               </View>
-              {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_address ?
+              {event._source.event_address ?
               <View style={{ padding: 20 }}>
-                <Text style={styles.newsHeader} onPress={()=>this.openMap(parseFloat(this.props.navigation.state.params.eventDetail._source.event_lat)+","+parseFloat(this.props.navigation.state.params.eventDetail._source.event_lng))}><Icon name='ios-map-outline' style={styles.timeIcon}/>  {this.props.navigation.state.params.eventDetail._source.event_address.replace(/\n/g, " ")}</Text>
+                <Text style={styles.newsHeader} onPress={()=>this.openMap(parseFloat(event._source.event_lat)+","+parseFloat(event._source.event_lng))}><Icon name='ios-map-outline' style={styles.timeIcon}/>  {event._source.event_address.replace(/\n/g, " ")}</Text>
               </View>
-              :<View/>:<View/>}
+              :<View/>}
               <View>
                 <Grid>
-                  {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_date ? 
+                  {event._source.event_date ? 
                     <View style={{ paddingLeft: 20}}>
                       <Text style={styles.newsHeader}>
-                          <Icon name='ios-calendar-outline' style={styles.timeIcon}/>  {this.props.navigation.state.params.eventDetail._source.event_date}
-                              {this.props.navigation.state.params.eventDetail._source.expire_by ? 
-                                <Text style={styles.newsComment}> to {this.props.navigation.state.params.eventDetail._source.expire_by}</Text>:''}
+                          <Icon name='ios-calendar-outline' style={styles.timeIcon}/>  {event._source.event_date}
+                              {event._source.expire_by ? 
+                                <Text style={styles.newsHeader}> to {event._source.expire_by}</Text>:''}
                       </Text>
-                 </View> : <View/>:<View/>}
+                 </View> : <View/>}
                 </Grid>  
                 <Grid style={{ padding: 20 }}>
-                  {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_time_from
-                  ?
+                  {event._source.event_time_from ?
                   <Col style={{ flexDirection: "row",alignItems:'flex-start'}}>
                     <TouchableOpacity>
-                      <Text style={styles.newsHeader}><Icon name='ios-timer-outline' style={styles.timeIcon}/>  {this.props.navigation.state.params.eventDetail._source.event_time_from} {this.props.navigation.state.params.eventDetail._source.event_time_to ?  "-" : ''} {this.props.navigation.state.params.eventDetail._source.event_time_to ?  this.props.navigation.state.params.eventDetail._source.event_time_to : ''}</Text>
+                      <Text style={styles.newsHeader}><Icon name='ios-timer-outline' style={styles.timeIcon}/>  {event._source.event_time_from} {event._source.event_time_to ?  `to `+event._source.event_time_to : ''}</Text>
                     </TouchableOpacity>
                   </Col>
-                  :<View/>:<View/>}
+                  :<View/>}
                 </Grid>
                 <Grid>
-                  {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.payment ?
+                  {event._source.payment ?
                   <Col style={{paddingLeft:20,alignItems:'flex-start'}}>
                     <TouchableOpacity>
-                    <Text style={styles.newsHeader}> &#8377; {this.props.navigation.state.params.eventDetail._source.payment}</Text>
+                    <Text style={styles.newsHeader}> &#8377; {event._source.payment}</Text>
                     </TouchableOpacity>
-                  </Col> :<View/>:<View/>}
+                  </Col> :<View/>}
                 </Grid>
               </View>
               <View style={{ padding: 20 }}>
-              {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.contact_name ?
+              {event._source.contact_name ?
                 <View style={styles.newsCommentContainer}>
                   <Text style={styles.newsComment}>
-                  <Icon name='md-person' style={styles.timeIcon}/>  {this.props.navigation.state.params.eventDetail._source.contact_name}
+                  <Icon name='md-person' style={styles.timeIcon}/>  {event._source.contact_name}
                   </Text>
-                </View> : <View/>:<View/>}
-                {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.contact_number ?
+                </View> : <View/>}
+                {event._source.contact_number ?
                 <View style={styles.newsCommentContainer}>
-                  <Text style={styles.newsComment} onPress={()=>{this.phoneDial(this.props.navigation.state.params.eventDetail)}}>
-                    <Icon name='ios-phone-portrait' style={styles.timeIcon}/>  {this.props.navigation.state.params.eventDetail._source.contact_number}
+                  <Text style={styles.newsComment} onPress={()=>{this.phoneDial(event)}}>
+                    <Icon name='ios-phone-portrait' style={styles.timeIcon}/>  {event._source.contact_number}
                   </Text>
-                </View> : <View/>:<View/>}
-                {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.contact_email ?
+                </View> : <View/>}
+                {event._source.contact_email ?
                 <View style={styles.newsCommentContainer}>
-                  <Text style={styles.newsComment} onPress={()=>{this.email(this.props.navigation.state.params.eventDetail)}}>
-                    <Icon name='md-mail' style={styles.timeIcon}/>  {this.props.navigation.state.params.eventDetail._source.contact_email}
+                  <Text style={styles.newsComment} onPress={()=>{this.email(event)}}>
+                    <Icon name='md-mail' style={styles.timeIcon}/>  {event._source.contact_email}
                   </Text>
-                </View> : <View/>:<View/>}  
-                {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.website ?
+                </View> : <View/>}  
+                {event._source.website ?
                 <View style={styles.newsCommentContainer}>
-                  <Text style={styles.newsComment} onPress={()=>{this.openbrowser(this.props.navigation.state.params.eventDetail._source.website)}}>
-                    <Icon name='md-globe' style={styles.timeIcon}/>  {this.props.navigation.state.params.eventDetail._source.website}
+                  <Text style={styles.newsComment} onPress={()=>{this.openbrowser(event._source.website)}}>
+                    <Icon name='md-globe' style={styles.timeIcon}/>  {event._source.website}
                   </Text>
-                </View> : <View/> : <View/>}
+                </View> : <View/>}
                 
                </View>
-               {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.tags && this.props.navigation.state.params.eventDetail._source.tags.length > 1 ?
+               {event._source.tags && event._source.tags.length > 1 ?
                 <View style={{ paddingLeft: 10,paddingBottom:20}}>
-                  {/* <Text style={styles.newsHeader}>Tags</Text>                     */}
                   <Grid>
-                    {this.props.navigation.state.params.eventDetail._source.tags.map((tag,key)=>
+                    {event._source.tags.map((tag,key)=>
                       <View style={{ flexDirection: "row",paddingRight:5,marginTop:10}} key={key}>
-                          <Button bordered style={{padding:0,borderRadius:10,borderColor:'#01cca1'}} onPress={()=>{this.props.navigation.navigate('EventList',{tagName:tag,banner:"https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+tag+".jpg"})}}><Text>{tag}</Text></Button>
+                          <Button bordered style={{padding:0,borderRadius:10,borderColor:'#01cca1'}} onPress={()=>{navigation.navigate('EventList',{tagName:tag,banner:"https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+tag+".jpg"})}}><Text>{tag}</Text></Button>
                       </View>)}
                   </Grid>
                 </View>
-                :<View/>:<View/>}
+                :<View/>}
             </View>
-          {this.props.navigation.state.params.eventDetail ?
+          {event._source.event_lat != "" && event._source.event_lng != "" ?
              <View style ={styles.mapContainer}>
                 <MapView
                   style={styles.map}
                   initialRegion={{
-                  latitude: parseFloat(this.props.navigation.state.params.eventDetail._source.event_lat),
-                  longitude: parseFloat(this.props.navigation.state.params.eventDetail._source.event_lng),
+                  latitude: parseFloat(event._source.event_lat),
+                  longitude: parseFloat(event._source.event_lng),
                   latitudeDelta: 0.015,
                   longitudeDelta: 0.0121,
                 }}
                 >
                 <MapView.Marker
                   coordinate={{
-                    latitude:parseFloat(this.props.navigation.state.params.eventDetail._source.event_lat),
-                    longitude:parseFloat(this.props.navigation.state.params.eventDetail._source.event_lng)
+                    latitude:parseFloat(event._source.event_lat),
+                    longitude:parseFloat(event._source.event_lng)
                     }}
                   />
               </MapView>
@@ -334,7 +319,7 @@ class EventDetail extends Component {
               <View/>}
             </View>
           </View>
-        </Content>
+        </Content>:<Content/>}
       </Container>
     );
   }

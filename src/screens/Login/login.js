@@ -8,7 +8,6 @@ const bg = require("../../assets/bg.png");
 const logo = require("../../assets/logo.png");
 import OneSignal from 'react-native-onesignal'; 
 const deviceOneSignal={};
-import CookieManager from 'react-native-cookies';
 let pushNotificationdata = 'false'; 
 let idNotification ='';
 let dataNotificationResult = [];
@@ -43,27 +42,15 @@ class Login extends Component {
     OneSignal.addEventListener('ids', this.onIds);
   }
   onReceived(notification) {
-    // Alert.alert(
-    //   'Notification',
-    //   notification.payload.body
-    // )
     console.log(notification)
   }
   onOpened(openResult) {
-    //Alert.alert("hai",openResult.notification.payload.additionalData.ID)
-    /*this.props.pushNotification(openResult.notification.payload.additionalData.id).then((data)=>{
-      if(openResult.notification.payload.additionalData.type === 'EventDetail'){
-        this.props.navigation.navigate('EventDetail',{eventDetail:this.props.notification})
-      }
-    })*/
     let navTo = openResult.notification.payload.additionalData;
     pushNotificationdata = navTo.navto;
     idNotification=navTo.id
     if(idNotification != ''){
       notification(idNotification).then((data)=>{
         dataNotificationResult=data.hits.hits[0]
-        //console.warn(idNotification,pushNotificationdata)
-        //console.warn(JSON.stringify(dataNotificationResult))
       })
     }
   }
@@ -126,37 +113,14 @@ class Login extends Component {
     })
   }
   phoneLogin(){
-    //this.props.navigation.navigate("Registration",{phoneNo:"9962170619",oneSignal:deviceOneSignal})
-    //console.warn(JSON.stringify(deviceOneSignal))
     RNAccountKit.loginWithPhone()
     .then((fbtoken) => {
       if (!fbtoken) {
         console.log('Login cancelled')
       } else {
-        //console.warn("to",fbtoken.token)
         RNAccountKit.getCurrentAccount()
         .then((account) => {
-          /*this.props.loginAction(account.phoneNumber.number).then((data)=>{
-            if(this.props.login.status === 'unauthorized'){
-              this.props.navigation.navigate("Registration",{phoneNo:account.phoneNumber.number,oneSignal:deviceOneSignal})
-            }else if(this.props.login.status === 'success'){
-                this.props.loginSuccess(this.props.login.message)
-                AsyncStorage.setItem('userId', this.props.login.message);
-                this.props.navigation.navigate("Drawer",{userLogin:this.props.login.message})
-              }else{
-                Alert.alert(
-                  'Login Failed',
-                  "Oops! Something went wrong.Please try again after some time",
-                  [
-                    { text: 'Ok', onPress: () => { () => { this.props.navigation.navigate('Login') } }, style: 'cancel' },
-                  ],
-                  { cancelable: false }
-                )
-              }            
-          })*/
           this.props.authenticate(account.phoneNumber.number,fbtoken.token).then(data=>{        
-            //console.warn("token",JSON.stringify(this.props.acessToken))
-            //console.warn("ID",this.props.acessToken.userid)
             if(this.props.acessToken.is_new_user === true){
               AsyncStorage.setItem('mobileDeviceInfo',JSON.stringify(deviceOneSignal));
               this.props.navigation.navigate("Registration",{phoneNo:account.phoneNumber.number,oneSignal:deviceOneSignal,userDetail:this.props.acessToken})
@@ -212,17 +176,3 @@ class Login extends Component {
   }
 }
 export default Login;
-
-
-/*
-  `CookieManager.get('https://api.lokally.in')
-              .then((res) => {
-                console.warn('CookieManager.get =>', res); // => 'user_session=abcdefg; path=/;' 
-              });
-
-              {this.props.login.message !== '' ?
-              this.enterDirectly()        
-              :<View style={styles.form}>
-                <Button style={{alignSelf: "center",marginBottom:20,borderColor:'white'}} onPress={()=>this.phoneLogin()} ><Text>LOGIN WITH PHONE NUMBER</Text></Button>
-            </View>}
-*/

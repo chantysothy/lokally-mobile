@@ -66,11 +66,12 @@ export default class DealCategoryPage extends Component {
     }
 
     render() {
+      let navigation = this.props.navigation
       return (
         <Container>
           <Header>
             <Button
-              onPress={() => this.props.navigation.navigate("DrawerOpen")}
+              onPress={() => navigation.navigate("DrawerOpen")}
               transparent>
               <Icon name="menu" />
             </Button>
@@ -78,7 +79,7 @@ export default class DealCategoryPage extends Component {
               <Title>Deal Category</Title>
               <Button
               style={{alignSelf:'flex-end',marginLeft:deviceWidth/4+40,marginTop:10}}
-              onPress={() => this.props.navigation.navigate("SearchContainer",{search:this.state.dealCategory,routePath:'DealList'})}
+              onPress={() =>navigation.navigate("SearchContainer",{search:this.state.dealCategory,routePath:'DealList'})}
               transparent>
               <Icon  name="search" />
             </Button>
