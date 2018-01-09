@@ -66,6 +66,12 @@ export default {
     alignSelf: "flex-start",
     fontWeight: "bold"
   },
+  applicable_for:{
+    color: Platform.OS === "android" ? "#777" : "#666",
+    fontSize: 15,
+    alignSelf: "flex-start",
+    fontWeight: "bold"
+  },
   newsTypeView: {
     borderBottomWidth: 1,
     borderBottomColor: Platform.OS === "android" ? "#777" : "#666",
@@ -125,6 +131,26 @@ export default {
     color: "#222",
     fontWeight: "500",
     fontSize: 14,
-    alignSelf:"center"
+    alignSelf:"flex-start",
+    paddingLeft:20
+  },
+  mapContainer: {
+    height: 200,
+    width: deviceWidth-20,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    position: 'relative',
+    top: 0,
+    left: 10,
+    right: 0,
+    bottom: 0,
+    marginBottom:10
+  },
+  map: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0
   }
 };

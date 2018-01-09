@@ -15,6 +15,8 @@ import Share from 'react-native-share';
 
 const screen = Dimensions.get('window');
 const ASPECT_RATIO = screen.width / screen.height;
+const find = ' ';
+const re = new RegExp(find, 'g');
 
 class EventDetail extends Component {
  
@@ -59,19 +61,20 @@ class EventDetail extends Component {
   }
 
   share(event){
-    let shareObj = {
+    let shareObj = { 
       "user_id" : this.props.navigation.state.params.eventDetail._id,
       "item_id" : this.state.userId,
       "shared_to" : "clustrex",
       "shared_via" : "facebook" 
     }
     let url = "http://maps.google.com/maps?q="+event._source.event_lat+","+event._source.event_lng+"&ll="+event._source.event_lat+","+event._source.event_lng+"&z=17"
+    let link = "https://www.lokally.in/events/"+event._id+"/"+event._source.event_title.replace(re, '%20') 
     SendIntentAndroid.sendText({
       title: 'Select the app to share',
-      text: "Event Title:"+event._source.event_title+"\n"+"Date:"+event._source.event_date+"\n"+"Address:"+event._source.event_address+"\n"+"From Time:"+event._source.event_time_from+"\n"+"To Time:"+event._source.event_time_to+"\n"+"Click link to get direction "+url,
+      text: "Event Title:"+event._source.event_title+"\nDate:"+event._source.event_date+"\nAddress:"+event._source.event_address+"\nFrom Time:"+event._source.event_time_from+"\nTo Time:"+event._source.event_time_to+"\nVisit:"+link+"\nClick link to get direction "+url,
       type: SendIntentAndroid.TEXT_PLAIN
     })
-    share(shareObj,this.state.access).then((data)=>console.warn(JSON.stringify(data)))
+    share(shareObj,this.state.access).then((data)=>console.log(JSON.stringify(data)))
     /*let obj = {
       title: event._source.event_title,
       message:"Event Title:"+event._source.event_title+"\n"+"Date:"+event._source.event_date+"\n"+"Address:"+event._source.event_address+"\n"+"From Time:"+event._source.event_time_from+"\n"+"To Time:"+event._source.event_time_to+"\n"+"Click link to get direction "+url,
@@ -111,12 +114,10 @@ class EventDetail extends Component {
     });
   };
    addEventToCalender(event){
-      var find = ' ';
-      var re = new RegExp(find, 'g');
       let title = event._source.event_title.replace(re, '%20');
     SendIntentAndroid.addCalendarEvent({
       title: event._source.event_title,
-      description: "https://www.lokally.in/homepage/eventdetails/"+event._id+"/"+title,
+      description: "https://www.lokally.in/events/"+event._id+"/"+title,
       startDate: event._source.event_date,
       endDate: event._source.event_date,
       recurrence: 'yearly',
@@ -128,17 +129,13 @@ class EventDetail extends Component {
    }
    userLikes(){
     var obj={};
-    AsyncStorage.getItem('userId',(err,value)=>{
-      if(value != null){
-        obj={
-          "user_id" : value,
-          "item_id" : this.props.navigation.state.params.eventDetail._id  
-        }        
-        this.props.userLike(obj,this.state.access).then((data)=>{
-          this.getLikesCount()
-          this.getLikesDetail()
-        })
-      }
+    obj={
+      "user_id" : this.state.userId,
+      "item_id" : this.props.navigation.state.params.eventDetail._id  
+    }        
+    this.props.userLike(obj,this.state.access).then((data)=>{
+      this.getLikesCount()
+      this.getLikesDetail()
     })
     {this.props.error.length === 0 
         ? ""
@@ -223,20 +220,20 @@ class EventDetail extends Component {
                     </TouchableOpacity>
                   </Col>
                 </Grid>
-                {this.props.navigation.state.params.eventDetail ?  this.props.navigation.state.params.eventDetail._source.applicable_for ?
-                 <Grid style={{ paddingBottom: 20 }}>
-                  <Col style={{ flexDirection: "row" }}>
-                    <TouchableOpacity>
-                      <Text style={styles.eventAddress} numberOfLines={2}>Applicable for : {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.applicable_for :''}</Text>
-                    </TouchableOpacity>
-                  </Col>
-                </Grid>
-                :<View/>:<View/>}
                 {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_description ?
                 <HTMLView
                     value={this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_description :'<p></p>'}					
                     stylesheet={styles.htmlContent}	
                 />
+                :<View/>:<View/>}
+                 {this.props.navigation.state.params.eventDetail ?  this.props.navigation.state.params.eventDetail._source.applicable_for ?
+                 <Grid>
+                  <Col style={{ flexDirection: "row" }}>
+                    <TouchableOpacity>
+                      <Text style={styles.newsHeader} numberOfLines={2}>Applicable for : {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.applicable_for :''}</Text>
+                    </TouchableOpacity>
+                  </Col>
+                </Grid>
                 :<View/>:<View/>}
               </View>
               {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_address ?
@@ -245,7 +242,17 @@ class EventDetail extends Component {
               </View>
               :<View/>:<View/>}
               <View>
-                <Grid style={{ paddingLeft: 20 }}>
+                <Grid>
+                  {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_date ? 
+                    <View style={{ paddingLeft: 20}}>
+                      <Text style={styles.newsHeader}>
+                          <Icon name='ios-calendar-outline' style={styles.timeIcon}/>  {this.props.navigation.state.params.eventDetail._source.event_date}
+                              {this.props.navigation.state.params.eventDetail._source.expire_by ? 
+                                <Text style={styles.newsComment}> to {this.props.navigation.state.params.eventDetail._source.expire_by}</Text>:''}
+                      </Text>
+                 </View> : <View/>:<View/>}
+                </Grid>  
+                <Grid style={{ padding: 20 }}>
                   {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.event_time_from
                   ?
                   <Col style={{ flexDirection: "row",alignItems:'flex-start'}}>
@@ -254,8 +261,10 @@ class EventDetail extends Component {
                     </TouchableOpacity>
                   </Col>
                   :<View/>:<View/>}
+                </Grid>
+                <Grid>
                   {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.payment ?
-                  <Col style={{marginRight:20,alignItems:'flex-end'}}>
+                  <Col style={{paddingLeft:20,alignItems:'flex-start'}}>
                     <TouchableOpacity>
                     <Text style={styles.newsHeader}> &#8377; {this.props.navigation.state.params.eventDetail._source.payment}</Text>
                     </TouchableOpacity>
@@ -290,11 +299,11 @@ class EventDetail extends Component {
                 
                </View>
                {this.props.navigation.state.params.eventDetail ? this.props.navigation.state.params.eventDetail._source.tags && this.props.navigation.state.params.eventDetail._source.tags.length > 1 ?
-                <View style={{ paddingLeft: 20,paddingBottom:20 }}>
+                <View style={{ paddingLeft: 10,paddingBottom:20}}>
                   {/* <Text style={styles.newsHeader}>Tags</Text>                     */}
                   <Grid>
                     {this.props.navigation.state.params.eventDetail._source.tags.map((tag,key)=>
-                      <View style={{ flexDirection: "row",paddingRight:10,marginTop:10}} key={key}>
+                      <View style={{ flexDirection: "row",paddingRight:5,marginTop:10}} key={key}>
                           <Button bordered style={{padding:0,borderRadius:10,borderColor:'#01cca1'}} onPress={()=>{this.props.navigation.navigate('EventList',{tagName:tag,banner:"https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+tag+".jpg"})}}><Text>{tag}</Text></Button>
                       </View>)}
                   </Grid>

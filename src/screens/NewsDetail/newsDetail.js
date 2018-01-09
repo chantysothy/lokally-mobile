@@ -6,10 +6,12 @@ import SendIntentAndroid from 'react-native-send-intent';
 import styles from "./styles";
 import MapView from 'react-native-maps';
 import HTMLView from 'react-native-htmlview';
-import {eventsLike,getUserLike} from '../../utilities/config';
+import {eventsLike,getUserLike,share} from '../../utilities/config';
 import {  GoogleAnalyticsTracker  } from 'react-native-google-analytics-bridge';
 const tracker = new GoogleAnalyticsTracker('UA-110943333-1');
 import Orientation from 'react-native-orientation';
+const find = ' ';
+const re = new RegExp(find, 'g');
 
 class NewsDetail extends Component {
 
@@ -19,7 +21,8 @@ class NewsDetail extends Component {
     this.state={
       eventData:[],
       userLike:'',
-      access:''
+      access:'',
+      userId:''
     }
   }
   componentDidMount(){
@@ -29,6 +32,11 @@ class NewsDetail extends Component {
       if(value != null){
         this.setState({access:value})
         this.getLikesDetail()
+      }
+    })
+    AsyncStorage.getItem('userId',(err,value)=>{
+      if(value != null){
+        this.setState({userId:value})
       }
     })
   }
@@ -57,25 +65,29 @@ class NewsDetail extends Component {
     })
 }
   share(news){
+    let shareObj = {
+      "user_id" : this.props.navigation.state.params.newsDetail._id ,
+      "item_id" : this.state.userId,
+      "shared_to" : "clustrex",
+      "shared_via" : "facebook" 
+    }
+    let link = "https://www.lokally.in/news/"+news._id+"/"+news._source.news_title.replace(re, '%20') 
     SendIntentAndroid.sendText({
       title: 'Select the app to share',
-      text: "News Title:'"+news._source.news_title+"'. Date:"+news._source.news_date,
+      text: "News Title:"+news._source.news_title+"\n"+"Date:"+news._source.news_date+"\n Visit:"+link,
       type: SendIntentAndroid.TEXT_PLAIN
     });
+    share(shareObj,this.state.access).then((data)=>console.log(JSON.stringify(data)))
    }
    userLikes(){
     var obj = {};
-    AsyncStorage.getItem('userId',(err,value)=>{
-      if(value != null){
-        obj={
-          "user_id" : value,
-          "item_id" : this.props.navigation.state.params.newsDetail._id  
-        }        
-        this.props.userLike(obj,this.state.access).then((data)=>{
-          this.getLikesCount()
-          this.getLikesDetail()
-        })
-      }
+    obj={
+      "user_id" : this.state.userId,
+      "item_id" : this.props.navigation.state.params.newsDetail._id  
+    }        
+    this.props.userLike(obj,this.state.access).then((data)=>{
+      this.getLikesCount(this.props.navigation.state.params.newsDetail._id )
+      this.getLikesDetail()
     })
     {this.props.error.length === 0 
         ? ""
@@ -91,6 +103,7 @@ class NewsDetail extends Component {
     this.props.navigation.navigate('ImageZoomRender',{url:this.props.navigation.state.params.newsDetail._source.news_images[0]})
   }
   render() {
+    //console.warn(JSON.stringify(this.props.navigation.state.params.newsDetail))
     return (
       <Container>
         <Header
@@ -176,11 +189,11 @@ class NewsDetail extends Component {
                 </Grid>
               </View>
               {this.props.navigation.state.params.newsDetail ? this.props.navigation.state.params.newsDetail._source.tags && this.props.navigation.state.params.newsDetail._source.tags.length > 1 ?
-                <View style={{ paddingLeft: 20,paddingBottom:20 }}>
+                <View style={{ paddingLeft: 10,paddingBottom:20 }}>
                   {/* <Text style={styles.newsHeader}>Tags</Text>                     */}
                   <Grid>
                     {this.props.navigation.state.params.newsDetail._source.tags.map((tag,key)=>
-                      <View style={{ flexDirection: "row",paddingRight:10,marginTop:10}} key={key}>
+                      <View style={{ flexDirection: "row",paddingRight:5,marginTop:10}} key={key}>
                           <Button bordered style={{padding:0,borderRadius:10,borderColor:'#01cca1'}} onPress={()=>{this.props.navigation.navigate('NewsList',{tagName:tag,banner:"https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+tag+".jpg"})}}><Text>{tag}</Text></Button>
                       </View>)}
                   </Grid>

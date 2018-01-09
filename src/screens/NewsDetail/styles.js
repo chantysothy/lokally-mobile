@@ -210,7 +210,7 @@ export default {
   },
   mapContainer: {
     height: 200,
-    width: 340,
+    width: deviceWidth-20,
     justifyContent: 'flex-end',
     alignItems: 'center',
     position: 'relative',

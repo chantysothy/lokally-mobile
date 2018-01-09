@@ -9,7 +9,10 @@ import HTMLView from 'react-native-htmlview';
 import {  GoogleAnalyticsTracker  } from 'react-native-google-analytics-bridge';
 const tracker = new GoogleAnalyticsTracker('UA-110943333-1');
 import Orientation from 'react-native-orientation';
-import {eventsLike,getUserLike} from '../../utilities/config';
+import MapView from 'react-native-maps';
+import {eventsLike,getUserLike,share} from '../../utilities/config';
+const find = ' ';
+const re = new RegExp(find, 'g');
 
 class DealDetail extends Component {
  
@@ -19,7 +22,8 @@ class DealDetail extends Component {
     this.state={
       access:'',
       userLike:'',
-      eventData:[]
+      eventData:[],
+      userId:''
     }
   }
   componentWillMount(){
@@ -29,6 +33,11 @@ class DealDetail extends Component {
       if(value != null){
         this.setState({access:value})
         this.getLikesDetail()
+      }
+    })
+    AsyncStorage.getItem('userId',(err,value)=>{
+      if(value != null){
+        this.setState({userId:value})
       }
     })
   }
@@ -57,15 +66,26 @@ class DealDetail extends Component {
     })
 }
   share(deal){
+    let shareObj = {
+      "user_id" : this.props.navigation.state.params.dealDetail._id ,
+      "item_id" : this.state.userId,
+      "shared_to" : "clustrex",
+      "shared_via" : "facebook" 
+    }
+    let link = "https://www.lokally.in/deals/"+deal._id+"/"+deal._source.deal_title.replace(re, '%20') 
     SendIntentAndroid.sendText({
       title: 'Select the app to share',
-      text: "Deal Title:'"+deal._source.deal_title+"\n"+"Deal Brand"+deal._source.brand+"\n"+"Offer expires at "+deal._source.deal_end_date,
+      text: "Deal title:"+deal._source.deal_title+"\nDeal starts date :"+deal._source.deal_start_date+"\nVisit:"+link,
       type: SendIntentAndroid.TEXT_PLAIN
     });
+    share(shareObj,this.state.access).then((data)=>console.warn(JSON.stringify(data)))
    }
 
    phoneDial(event){
     SendIntentAndroid.sendPhoneDial(event._source.contact_number);
+   }
+   openMap(address){
+    SendIntentAndroid.openMaps(address);
    }
    openbrowser = (url) => {
     Linking.canOpenURL(url).then(supported => {
@@ -81,17 +101,13 @@ class DealDetail extends Component {
   }
   userLikes(){
     var obj={};
-    AsyncStorage.getItem('userId',(err,value)=>{
-      if(value != null){
-        obj={
-          "user_id" : value,
-          "item_id" : this.props.navigation.state.params.dealDetail._id  
-        }        
-        this.props.userLike(obj,this.state.access).then((data)=>{
-          this.getLikesCount()
-          this.getLikesDetail()
-        })
-      }
+    obj={
+      "user_id" : this.state.userId,
+      "item_id" : this.props.navigation.state.params.dealDetail._id  
+    }        
+    this.props.userLike(obj,this.state.access).then((data)=>{
+      this.getLikesCount(this.props.navigation.state.params.dealDetail._id)
+      this.getLikesDetail()
     })
     {this.props.error.length === 0 
         ? ""
@@ -103,7 +119,11 @@ class DealDetail extends Component {
       })
     }
    }
+   email(event){
+    SendIntentAndroid.sendMail(event._source.contact_email_id,"Regarding event"+event._source.event_title,"");
+   }
   render() {
+    console.warn(JSON.stringify(this.props.navigation.state.params.dealDetail._source))
     return (
       <Container>
         <Header
@@ -176,34 +196,6 @@ class DealDetail extends Component {
                     </Col>
                 </Grid>:<View/>:<View/>}
               </View>
-              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.brand ?
-              <View style={{ padding: 20 }}>
-                <Text style={styles.newsHeader}>Brand : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.brand }</Text></Text>
-              </View> : <View/>:<View/>}       
-              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.payment ?
-              <View style={{ padding: 20 }}>
-                <Text style={styles.newsHeader}>Payment : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.payment }</Text></Text>
-              </View> : <View/>:<View/>}              
-              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.product_code ?
-              <View style={{ paddingLeft: 20 }}>
-                <Text style={styles.newsHeader}>Product Code : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.product_code}</Text></Text>
-              </View> : <View/>:<View/>}
-              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_type ? 
-                <View style={{ padding: 20 }}>
-                <Text style={styles.newsHeader}>Deal Type : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.deal_type}</Text></Text>
-              </View> : <View/>:<View/>}
-              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.city ? 
-                <View style={{ paddingLeft: 20 }}>
-                <Text style={styles.newsHeader}>City : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.city}</Text></Text>
-              </View> : <View/>:<View/>} 
-              {this.props.navigation.state.params.dealDetail ?this.props.navigation.state.params.dealDetail._source.type ? 
-                <View style={{ padding: 20 }}>
-                <Text style={styles.newsHeader}>Type : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.type}</Text></Text>
-              </View> : <View/>:<View/>}
-              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_end_date ? 
-                <View style={{ paddingLeft: 20 ,paddingBottom:20}}>
-                <Text style={styles.newsHeader}>Validity : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.deal_end_date}</Text></Text>
-              </View> : <View/>:<View/>}
               {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_body ?
                 <View style={styles.newsContentBody}>
                     <HTMLView
@@ -212,7 +204,42 @@ class DealDetail extends Component {
                       />
                 </View>
               :<View/>:<View/>}
-              
+              {this.props.navigation.state.params.dealDetail ?  this.props.navigation.state.params.dealDetail._source.applicable_for ?
+                 <Grid style={{ paddingLeft: 20 }}>
+                  <Col style={{ flexDirection: "row" }}>
+                    <TouchableOpacity>
+                      <Text style={styles.newsHeader} numberOfLines={2}>Applicable for : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.applicable_for :''}</Text></Text>
+                    </TouchableOpacity>
+                  </Col>
+                </Grid>
+                :<View/>:<View/>}
+              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_price ?
+              <View style={{ padding: 20 }}>
+                <Text style={styles.newsHeader}>Deal : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.deal_price }</Text></Text>
+              </View> : <View/>:<View/>}       
+              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.payment ?
+              <View style={{ paddingLeft: 20 }}>
+                <Text style={styles.newsHeader}>&#8377; <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.payment }</Text></Text>
+              </View> : <View/>:<View/>}
+              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.location ?
+              <View style={{ padding: 20 }}>
+                <Text style={styles.newsComment} onPress={()=>this.openMap(parseFloat(this.props.navigation.state.params.dealDetail._source.deal_lat)+","+parseFloat(this.props.navigation.state.params.dealDetail._source.deal_lng))}><Icon name='ios-map-outline' style={styles.timeIcon}/>  {this.props.navigation.state.params.dealDetail._source.location.replace(/\n/g, " ")}</Text>
+              </View>
+              :<View/>:<View/>}              
+              {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_end_date ? 
+                <View style={{ paddingLeft: 20}}>
+                <Text style={styles.newsHeader}><Icon name='ios-calendar-outline' style={styles.timeIcon}/> {this.props.navigation.state.params.dealDetail._source.deal_start_date ? <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.deal_start_date} to {this.props.navigation.state.params.dealDetail._source.deal_end_date}</Text> : <Text style={styles.newsComment}>{this.props.navigation.state.params.dealDetail._source.deal_end_date}</Text>}</Text>
+              </View> : <View/>:<View/>}
+              <Grid  style={{ padding: 20}}>
+                {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.deal_time_from
+                    ?
+                    <Col style={{ flexDirection: "row",alignItems:'flex-start'}}>
+                      <TouchableOpacity>
+                        <Text style={styles.newsComment}><Icon name='ios-timer-outline' style={styles.timeIcon}/>  {this.props.navigation.state.params.dealDetail._source.deal_time_from} {this.props.navigation.state.params.dealDetail._source.deal_time_to ?  " to " : ''} {this.props.navigation.state.params.dealDetail._source.deal_time_to ?  this.props.navigation.state.params.dealDetail._source.deal_time_to : ''}</Text>
+                      </TouchableOpacity>
+                    </Col>
+                    :<View/>:<View/>}
+              </Grid>              
               <View style={{ padding: 20 }}>
                 {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.contact_name ?
                   <View style={styles.newsCommentContainer}>
@@ -226,6 +253,12 @@ class DealDetail extends Component {
                     <Icon name='ios-phone-portrait' style={styles.timeIcon}/>  {this.props.navigation.state.params.dealDetail._source.contact_number}
                     </Text>
                   </View> : <View/>:<View/>}
+                  {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.contact_email_id ?
+                <View style={styles.newsCommentContainer}>
+                  <Text style={styles.newsComment} onPress={()=>{this.email(this.props.navigation.state.params.dealDetail)}}>
+                    <Icon name='md-mail' style={styles.timeIcon}/>  {this.props.navigation.state.params.dealDetail._source.contact_email_id}
+                  </Text>
+                </View> : <View/>:<View/>} 
                   {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.website ?
                   <View style={styles.newsCommentContainer}>
                     <Text style={styles.newsComment} onPress={()=>{this.openbrowser(this.props.navigation.state.params.dealDetail._source.website)}}>
@@ -233,17 +266,6 @@ class DealDetail extends Component {
                     </Text>
                   </View> : <View/>:<View/>}
                </View>
-               {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.tags && this.props.navigation.state.params.dealDetail._source.tags.length > 1 ?
-                <View style={{ paddingLeft: 20,paddingBottom:20 }}>
-                  {/* <Text style={styles.newsHeader}>Tags</Text>                     */}
-                  <Grid>
-                    {this.props.navigation.state.params.dealDetail._source.tags.map((tag,key)=>
-                      <View style={{ flexDirection: "row",paddingRight:10,marginTop:10}} key={key}>
-                          <Button bordered style={{padding:0,borderRadius:10,borderColor:'#01cca1'}} onPress={()=>{this.props.navigation.navigate('DealList',{tagName:tag,banner:"https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+tag+".jpg"})}}><Text>{tag}</Text></Button>
-                      </View>)}
-                  </Grid>
-                </View>
-                :<View/>:<View/>}
                {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.terms_and_condition.length > 0 ?
                 <View>
                   <Text style={styles.terms_and_condition}>Terms and Condition</Text>
@@ -257,6 +279,38 @@ class DealDetail extends Component {
                   </View>
                 </View>
                 :<View/>:<View/>}
+               {this.props.navigation.state.params.dealDetail ? this.props.navigation.state.params.dealDetail._source.tags && this.props.navigation.state.params.dealDetail._source.tags.length > 1 ?
+                <View style={{ paddingLeft: 10,paddingBottom:20 }}>
+                  {/* <Text style={styles.newsHeader}>Tags</Text>*/}
+                  <Grid>
+                    {this.props.navigation.state.params.dealDetail._source.tags.map((tag,key)=>
+                      <View style={{ flexDirection: "row",paddingRight:5,marginTop:10}} key={key}>
+                          <Button bordered style={{padding:0,borderRadius:10,borderColor:'#01cca1'}} onPress={()=>{this.props.navigation.navigate('DealList',{tagName:tag,banner:"https://s3.ap-south-1.amazonaws.com/lokally-images/tag-images/"+tag+".jpg"})}}><Text>{tag}</Text></Button>
+                      </View>)}
+                  </Grid>
+                </View>
+                :<View/>:<View/>}
+               
+                 {this.props.navigation.state.params.dealDetail ?this.props.navigation.state.params.dealDetail._source.deal_lat && this.props.navigation.state.params.dealDetail._source.deal_lng ?
+                <View style ={styles.mapContainer}>
+                  <MapView
+                    style={styles.map}
+                    region={{
+                      latitude: parseFloat(this.props.navigation.state.params.dealDetail._source.deal_lat),
+                      longitude: parseFloat(this.props.navigation.state.params.dealDetail._source.deal_lng),
+                      latitudeDelta: 0.015,
+                      longitudeDelta: 0.0121,
+                    }}
+                  >
+                  <MapView.Marker
+                      coordinate={{
+                        latitude:parseFloat(this.props.navigation.state.params.dealDetail._source.deal_lat),
+                        longitude: parseFloat(this.props.navigation.state.params.dealDetail._source.deal_lng)
+                        }}
+                      />
+                  </MapView>
+                </View>
+                :<Text/>:<View/>}
             </View>
           </View>
         </Content>
